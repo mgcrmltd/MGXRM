@@ -9,6 +9,9 @@ namespace MGXRM.Common.Tests.Framework.Extensions
 {
     public class EntityEntensionsTest
     {
+        public static string EntityName = "mgxrm_Entity";
+        public static string FieldName = "mgxrm_description";
+
         [Fact]
         public void SameAs_Returns_False_If_OtherEntity_Null()
         {
@@ -29,7 +32,7 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         public void SameAs_Returns_False_If_EntityLogicalName_Not_Same()
         {
             var id = Guid.NewGuid();
-            var originalEntity = new Entity() { Id = id, LogicalName = "mgxrm_Entity" };
+            var originalEntity = new Entity() { Id = id, LogicalName = EntityName };
             Entity otherEntity = new Entity() { Id = id, LogicalName = "mgxrm_OtherEntity" };
             Assert.False(originalEntity.SameAs(otherEntity));
         }
@@ -38,10 +41,10 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         public void SameAs_Returns_False_If_Atributes_Not_Same()
         {
             var id = Guid.NewGuid();
-            var originalEntity = new Entity() { Id = id, LogicalName = "mgxrm_Entity" };
-            originalEntity.Attributes.Add("mgxrm_description", "one");
-            Entity otherEntity = new Entity() { Id = id, LogicalName = "mgxrm_Entity" };
-            otherEntity.Attributes.Add("mgxrm_description", "two");
+            var originalEntity = new Entity() { Id = id, LogicalName = EntityName };
+            originalEntity.Attributes.Add(FieldName, "one");
+            Entity otherEntity = new Entity() { Id = id, LogicalName = EntityName };
+            otherEntity.Attributes.Add(FieldName, "two");
             Assert.False(originalEntity.SameAs(otherEntity));
         }
 
@@ -68,8 +71,8 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         [InlineData(false)]
         public void ImposeEntity_Returns_Copy_Of_Original_If_ToImpose_Null(bool imposeNullValues)
         {
-            var originalEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = "mgxrm_Entity" };
-            originalEntity.Attributes.Add("mgxrm_description", "one");
+            var originalEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            originalEntity.Attributes.Add(FieldName, "one");
             var imposed = originalEntity.ImposeEntity(null, imposeNullValues);
             Assert.True(EntityExtensions.SameAs(imposed, originalEntity));
         }
@@ -80,8 +83,8 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         public void ImposeEntity_Returns_Copy_Of_ToImpose_If_Original_Null(bool imposeNullValues)
         {
             Entity originalEntity = null;
-            var toImpose = new Entity() { Id = Guid.NewGuid(), LogicalName = "mgxrm_Entity" };
-            toImpose.Attributes.Add("mgxrm_description", "one");
+            var toImpose = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            toImpose.Attributes.Add(FieldName, "one");
             var imposed = originalEntity.ImposeEntity(toImpose, imposeNullValues);
             Assert.True(EntityExtensions.SameAs(imposed, toImpose));
         }
@@ -125,9 +128,9 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             yield return new object[] { null, 1, false };
             yield return new object[] { new Money((decimal)10.50), new Money((decimal)10.50), true };
             yield return new object[] { new Money((decimal)10.50), new Money((decimal)3.75), false };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = "mgxrm_Entity" }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_Entity" }, true };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = "mgxrm_Entity" }, new EntityReference() { Id = _guid2, LogicalName = "mgxrm_Entity" }, false };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = "mgxrm_Entity" }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_OtherEntity" }, false };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, true };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid2, LogicalName = EntityEntensionsTest.EntityName }, false };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_OtherEntity" }, false };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(187187187), true };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(999999999), false };
         }
