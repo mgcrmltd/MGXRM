@@ -159,5 +159,3 @@ namespace MGXRM.Common.Framework
     }
 }
 
-//Test change
-
