@@ -56,9 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\EntityAttributeVersion.cs" />
     <Compile Include="Framework\EntityManager.cs" />
-    <Compile Include="Framework\Extensions\EntityAttributeExtensions.cs" />
     <Compile Include="Framework\Extensions\EntityExtensions.cs" />
+    <Compile Include="Framework\Interfaces\IEntityAttributeVersion.cs" />
     <Compile Include="Framework\Interfaces\IEntityManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

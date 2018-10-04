@@ -2,111 +2,159 @@
 using Microsoft.Xrm.Sdk;
 using System;
 using Xunit;
+using FakeItEasy;
+using MGXRM.Common.Framework.Interfaces;
 
 namespace MGXRM.Common.Tests.Framework
 {
     public class EntityManagerTest
     {
         protected const string EntityName = "mgxrm_Entity";
-        protected const string FieldName = "mgxrm_description";
+        protected const string FieldName = "mgxrm_field";
 
         [Fact]
-        public void GetLatestImageVersion_Selects_TargetImage_Value_First()
+        public void GetLatestImageVersion_Calls_IEntityAttributeVersion_GetLatestImageVersion()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            targetImage.Attributes.Add(FieldName, "target");
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            postImage.Attributes.Add(FieldName, "post");
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns("pre");
 
-            var em = new EntityManager<Entity>(preImage, targetImage, postImage);
-            Assert.Equal("target", em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestImageVersion(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
         }
 
         [Fact]
-        public void GetLatestImageVersion_Selects_TargetImage_Value_If_Present_And_Null()
+        public void GetLatestBool_Calls_IEntityAttributeVersion_GetLatestImageVersion_And_Casts()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            targetImage.Attributes.Add(FieldName, null);
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            postImage.Attributes.Add(FieldName, "post");
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(true);
 
-            Assert.Null(targetImage[FieldName]);
-            var em = new EntityManager<Entity>(preImage, targetImage, postImage);
-           
-            Assert.Null(em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestBool(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            Assert.IsType<bool>(val);
         }
 
         [Fact]
-        public void GetLatestImageVersion_Selects_PostImage_Value_If_Present_And_No_Target()
+        public void GetLatestBool_Can_Return_Null()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            postImage.Attributes.Add(FieldName, "post");
-
-            Assert.False(targetImage.Attributes.ContainsKey(FieldName));
-            var em = new EntityManager<Entity>(preImage, targetImage, postImage);
-            Assert.Equal("post",em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null);
+            var val = em.GetLatestBool(FieldName);
+            Assert.Null(val);
         }
 
         [Fact]
-        public void GetLatestImageVersion_Selects_PostImage_Value_If_Present_And_Null()
+        public void GetLatestDate_Calls_IEntityAttributeVersion_GetLatestImageVersion()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, "pre");
-         
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            postImage.Attributes.Add(FieldName, null);
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(DateTime.Now);
 
-            Assert.Null(postImage[FieldName]);
-            var em = new EntityManager<Entity>(preImage, null, postImage);
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestDate(FieldName);
 
-            Assert.Null(em.GetLatestImageVersion(FieldName));
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            Assert.IsType<DateTime>(val);
         }
 
         [Fact]
-        public void GetLatestImageVersion_Selects_PreImage_Value_If_Present_And_No_Target_Or_Post()
+        public void GetLatestDate_Can_Return_Null()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, "pre");
-
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-
-            var em = new EntityManager<Entity>(preImage, targetImage, postImage);
-
-            Assert.Equal("pre",em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null);
+            var val = em.GetLatestDate(FieldName);
+            Assert.Null(val);
         }
 
         [Fact]
-        public void GetLatestImageVersion_Selects_PreImage_Value_If_Present_And_Null()
+        public void GetLatestEntityReference_Calls_IEntityAttributeVersion_GetLatestImageVersion()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            preImage.Attributes.Add(FieldName, null);
-            
-            Assert.Null(preImage[FieldName]);
-            var em = new EntityManager<Entity>(preImage, null, null);
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
 
-            Assert.Null(em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestEntityReference(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<EntityReference>(FieldName)).MustHaveHappened();
         }
 
         [Fact]
-        public void GetLatestImageVersion_Returns_Null_If_Cannot_Find_In_An_Image()
+        public void GetLatestInt_Calls_IEntityAttributeVersion_GetLatestImageVersion()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(1);
 
-            Assert.False(preImage.Attributes.ContainsKey(FieldName));
-            Assert.False(targetImage.Attributes.ContainsKey(FieldName));
-            Assert.False(postImage.Attributes.ContainsKey(FieldName));
-            var em = new EntityManager<Entity>(preImage, null, preImage);
-            Assert.Null(em.GetLatestImageVersion(FieldName));
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestInt(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
         }
+        
+        [Fact]
+        public void GetLatestMoney_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        {
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(new Money(10));
+
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestMoney(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<Money>(FieldName)).MustHaveHappened();
+            Assert.IsType<Money>(val);
+        }
+
+        [Fact]
+        public void GetLatestMoney_Can_Return_Null()
+        {
+            var em = new EntityManager<Entity>(null, null, null);
+            var val = em.GetLatestMoney(FieldName);
+            Assert.Null(val);
+        }
+
+        [Fact]
+        public void GetLatestMoneyValue_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        {
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(new Money(10));
+
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestMoneyValue(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            Assert.IsType<decimal>(val);
+        }
+
+        [Fact]
+        public void GetLatestMoneValue_Can_Return_Null()
+        {
+            var em = new EntityManager<Entity>(null, null, null);
+            var val = em.GetLatestMoneyValue(FieldName);
+            Assert.Null(val);
+        }
+
+        [Fact]
+        public void GetLatestOptionSet_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        {
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
+
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestOptionSet(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<OptionSetValue>(FieldName)).MustHaveHappened();
+        }
+
+        [Fact]
+        public void GetLatestString_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        {
+            var entityAttributeVersionFake = A.Fake<IEntityAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
+
+            var em = new EntityManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestString(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<string>(FieldName)).MustHaveHappened();
+        }
+
     }
 }

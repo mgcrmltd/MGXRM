@@ -27,17 +27,21 @@ namespace MGXRM.Common.Framework.Extensions
 
         public static bool AttributeSameAs(object o, object value)
         {
-            if (o is null && value is null)
-                return true;
-            if (o is null && !(value is null))
-                return false;
+            switch (o)
+            {
+                case null when value is null:
+                    return true;
+                case null when !(value is null):
+                    return false;
+            }
+
             if (value is null && !(o is null))
                 return false;
 
             var oType = o.GetType();
             if(oType != value.GetType()) return false;
 
-            bool areSame = false;
+            var areSame = false;
             new Dictionary<Type, Action>{
                       {typeof(bool), () => areSame = ((bool)o) == ((bool)value)},
                       {typeof(int),() => areSame =((int)o) == ((int)value)},
@@ -57,11 +61,14 @@ namespace MGXRM.Common.Framework.Extensions
 
         public static Entity ImposeEntity(this Entity originalImage, Entity imageToImpose, bool imposeNullValues = true)
         {
-            if (imageToImpose == null && originalImage == null)
-                return null;
-
-            if (imageToImpose == null)
-                imageToImpose = originalImage;
+            switch (imageToImpose)
+            {
+                case null when originalImage == null:
+                    return null;
+                case null:
+                    imageToImpose = originalImage;
+                    break;
+            }
 
             var copy = originalImage != null ? new Entity(originalImage.LogicalName) { Id = originalImage.Id }
                 : new Entity(imageToImpose.LogicalName) { Id = imageToImpose.Id };
@@ -84,6 +91,19 @@ namespace MGXRM.Common.Framework.Extensions
                     copy[attribute.Key] = attribute.Value;
             }
             return copy;
+        }
+
+        public static bool HasNonNullValue(this Entity entity, string attributeName)
+        {
+            return entity != null && entity.Contains(attributeName) && entity[attributeName] != null;
+        }
+
+        public static bool RemoveValue(this Entity entity, string attributeName)
+        {
+            if (entity == null || !entity.Contains(attributeName)) return false;
+            entity.Attributes.Remove(attributeName);
+            return true;
+
         }
     }
 }

@@ -38,7 +38,7 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         }
 
         [Fact]
-        public void SameAs_Returns_False_If_Atributes_Not_Same()
+        public void SameAs_Returns_False_If_Attributes_Not_Same()
         {
             var id = Guid.NewGuid();
             var originalEntity = new Entity() { Id = id, LogicalName = EntityName };
@@ -58,7 +58,7 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         }
 
         [Theory]
-        [ClassData(typeof(EntensionsImposeTestData))]
+        [ClassData(typeof(ExtensionsImposeTestData))]
         public void ImposeEntity_Never_Returns_Reference_To_Input_Entities(Entity original, Entity toImpose, bool imposeNullValues)
         {
             var returnValue = original.ImposeEntity(toImpose, imposeNullValues);
@@ -95,12 +95,27 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         {
             Assert.Equal(same, EntityExtensions.AttributeSameAs(a, b));
         }
+
+        [Fact]
+        public void HasNonNullValue_Returns_False_If_Entity_Null()
+        {
+            Entity entity = null;
+            Assert.False(entity.HasNonNullValue("mgxrm_randon"));
+        }
+
+        [Fact]
+        public void HasNonNullValue_Returns_False_If_Not_Found()
+        {
+            Entity entity = null;
+            Assert.False(entity.HasNonNullValue("mgxrm_randon"));
+        }
     }
+
 
     public class ExtensionsSameAsTestData : IEnumerable<object[]>
     {
-        Guid _guid1;
-        Guid _guid2;
+        readonly Guid _guid1;
+        readonly Guid _guid2;
 
         public ExtensionsSameAsTestData()
         {
@@ -133,6 +148,12 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_OtherEntity" }, false };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(187187187), true };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(999999999), false };
+            yield return new object[] { new DateTime(2018,01,01), new DateTime(2018, 01, 01), true };
+            yield return new object[] { new DateTime(2018, 01, 01), new DateTime(2017, 02, 02), false };
+            yield return new object[] { true, true, true };
+            yield return new object[] { false,false, true};
+            yield return new object[] { true, false, false };
+            yield return new object[] { false, true, false };
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -141,12 +162,12 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         }
     }
 
-    public class EntensionsImposeTestData : IEnumerable<object[]>
+    public class ExtensionsImposeTestData : IEnumerable<object[]>
     {
         public readonly Entity OriginalImage;
         public readonly Entity ImageToImpose;
 
-        public EntensionsImposeTestData()
+        public ExtensionsImposeTestData()
         {
             OriginalImage = new Entity("xname");
             OriginalImage.Attributes.Add("xvalue1", "original");

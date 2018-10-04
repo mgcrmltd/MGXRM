@@ -5,12 +5,12 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework
 {
-    public class EntityManager<T> : IEntityManager<T> where T : Entity
+    public class EntityManager<T> : IEntityAttributeVersion, IEntityManager<T> where T : Entity
     {
         #region Members and Properties
-        public Entity PreImage { get; private set; }
-        public Entity TargetImage { get; private set; }
-        public Entity PostImage { get; private set; }
+        public Entity PreImage { get; }
+        public Entity TargetImage { get;  }
+        public Entity PostImage { get; }
 
         public T PreImageCast => PreImage.ToEntity<T>();
         public T TargetImageCast => TargetImage.ToEntity<T>();
@@ -18,83 +18,88 @@ namespace MGXRM.Common.Framework
 
         public Entity CombinedImage => PreImage.ImposeEntity(PostImage).ImposeEntity(TargetImage);
         public T CombinedImageCast => CombinedImage.ToEntity<T>();
+
+        protected IEntityAttributeVersion EntityAttributeVersion;
         #endregion
 
         #region Constructors
         public EntityManager() { }
-        public EntityManager(Entity preImage, Entity targeImage, Entity postImage)
+        public EntityManager(Entity preImage, Entity targetImage, Entity postImage)
         {
             PreImage = preImage;
             PostImage = postImage;
-            TargetImage = targeImage;
+            TargetImage = targetImage;
+            EntityAttributeVersion = new EntityAttributeVersion(TargetImage,PostImage,PreImage);
+        }
+
+        public EntityManager(Entity preImage, Entity targetImage, Entity postImage, IEntityAttributeVersion entityAttributeVersion)
+        {
+            PreImage = preImage;
+            PostImage = postImage;
+            TargetImage = targetImage;
+            EntityAttributeVersion = entityAttributeVersion;
         }
         #endregion
 
-        public object GetLatestImageVersion(string attributename)
-        {
-            if (TargetImage != null && TargetImage.Attributes.ContainsKey(attributename))
-                return TargetImage.Attributes[attributename];
-            if (PostImage != null && PostImage.Attributes.ContainsKey(attributename))
-                return PostImage.Attributes[attributename];
-            if (PreImage != null && PreImage.Attributes.ContainsKey(attributename))
-                return PreImage.Attributes[attributename];
+        #region Methods
+        public object GetLatestImageVersion(string attributeName)
+        { 
+            return EntityAttributeVersion.GetLatestImageVersion(attributeName);
+        }
 
+        public T1 GetLatestImageVersion<T1>(string attributeName) where T1 : class
+        {
+            return EntityAttributeVersion.GetLatestImageVersion<T1>(attributeName);
+        }
+
+        public bool? GetLatestBool(string attributeName)
+        {
+            var obj = GetLatestImageVersion(attributeName);
+            if (obj != null)
+                return ((bool)GetLatestImageVersion(attributeName));
             return null;
         }
 
-        public bool? GetLatestBool(string attributename)
+        public DateTime? GetLatestDate(string attributeName)
         {
-            throw new NotImplementedException();
+            var obj = GetLatestImageVersion(attributeName);
+            if (obj != null)
+                return ((DateTime)GetLatestImageVersion(attributeName));
+            return null;
         }
 
-        public DateTime? GetLatestDate(string attributename)
+        public EntityReference GetLatestEntityReference(string attributeName)
         {
-            throw new NotImplementedException();
-        }
-
-        public EntityReference GetLatestEntityReference(string attributename)
-        {
-            throw new NotImplementedException();
+            return GetLatestImageVersion<EntityReference>(attributeName);
         }
         
-        public int? GetLatestInt(string attributename)
+        public int? GetLatestInt(string attributeName)
         {
-            throw new NotImplementedException();
+            var obj = GetLatestImageVersion(attributeName);
+            return (int?)obj;
         }
 
-        public Money GetLatestMoney(string attributename)
+        public Money GetLatestMoney(string attributeName)
         {
-            throw new NotImplementedException();
+            return GetLatestImageVersion<Money>(attributeName);
         }
 
-        public decimal? GetLatestMoneyValue(string attributename)
+        public decimal? GetLatestMoneyValue(string attributeName)
         {
-            throw new NotImplementedException();
+            var obj = GetLatestImageVersion(attributeName);
+            if (obj != null)
+                return ((Money)GetLatestImageVersion(attributeName)).Value;
+            return null;
         }
 
-        public OptionSetValue GetLatestOptionSet(string attributename)
+        public OptionSetValue GetLatestOptionSet(string attributeName)
         {
-            throw new NotImplementedException();
+            return GetLatestImageVersion<OptionSetValue>(attributeName);
         }
 
-        public string GetLatestOptionString(string attributename)
+        public string GetLatestString(string attributeName)
         {
-            throw new NotImplementedException();
-        }
-
-        public string GetLatestString(string attributename)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool HasNonNullValue(Entity entity, string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool HasValue(Entity entity, string attributeName)
-        {
-            throw new NotImplementedException();
+            return GetLatestImageVersion<string>(attributeName);
         }
 
         public bool ImageDateAfterToday(string attributeName)
@@ -147,15 +152,11 @@ namespace MGXRM.Common.Framework
             throw new NotImplementedException();
         }
 
-        public void RemoveValue(Entity image, string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetOrUpdate(string attributeName, object value)
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
 
