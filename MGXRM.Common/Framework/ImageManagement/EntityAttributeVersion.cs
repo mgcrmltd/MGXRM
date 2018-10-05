@@ -2,7 +2,7 @@
 using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
 
-namespace MGXRM.Common.Framework
+namespace MGXRM.Common.Framework.ImageManagement
 {
     public class EntityAttributeVersion : IEntityAttributeVersion
     {

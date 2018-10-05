@@ -1,8 +1,8 @@
-﻿using MGXRM.Common.Framework;
-using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Xrm.Sdk;
 using System;
 using Xunit;
 using FakeItEasy;
+using MGXRM.Common.Framework.ImageManagement;
 using MGXRM.Common.Framework.Interfaces;
 
 namespace MGXRM.Common.Tests.Framework

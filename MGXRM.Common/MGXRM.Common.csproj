@@ -56,11 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\EntityAttributeVersion.cs" />
-    <Compile Include="Framework\EntityManager.cs" />
+    <Compile Include="Framework\ImageManagement\EntityAttributeVersion.cs" />
+    <Compile Include="Framework\ImageManagement\EntityManager.cs" />
     <Compile Include="Framework\Extensions\EntityExtensions.cs" />
     <Compile Include="Framework\Interfaces\IEntityAttributeVersion.cs" />
     <Compile Include="Framework\Interfaces\IEntityManager.cs" />
+    <Compile Include="Framework\Interfaces\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

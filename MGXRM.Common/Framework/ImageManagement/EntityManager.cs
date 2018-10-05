@@ -1,42 +1,36 @@
 ﻿using System;
+using System.Linq;
 using MGXRM.Common.Framework.Extensions;
 using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
 
-namespace MGXRM.Common.Framework
+namespace MGXRM.Common.Framework.ImageManagement
 {
     public class EntityManager<T> : IEntityAttributeVersion, IEntityManager<T> where T : Entity
     {
         #region Members and Properties
-        public Entity PreImage { get; }
-        public Entity TargetImage { get;  }
-        public Entity PostImage { get; }
-
-        public T PreImageCast => PreImage.ToEntity<T>();
-        public T TargetImageCast => TargetImage.ToEntity<T>();
-        public T PostImageCast => PostImage.ToEntity<T>();
-
-        public Entity CombinedImage => PreImage.ImposeEntity(PostImage).ImposeEntity(TargetImage);
-        public T CombinedImageCast => CombinedImage.ToEntity<T>();
-
+        private readonly Entity[] _images;
         protected IEntityAttributeVersion EntityAttributeVersion;
+        public Entity CombinedImageEntity {
+            get
+            {
+                var inReverse = _images.Reverse();
+                return inReverse.Aggregate<Entity, Entity>(null, (current, i) => current.ImposeEntity(i));
+            }
+        }
         #endregion
 
         #region Constructors
-        public EntityManager() { }
+
         public EntityManager(Entity preImage, Entity targetImage, Entity postImage)
         {
-            PreImage = preImage;
-            PostImage = postImage;
-            TargetImage = targetImage;
-            EntityAttributeVersion = new EntityAttributeVersion(TargetImage,PostImage,PreImage);
+            _images = new[] {targetImage, postImage, preImage};
+            EntityAttributeVersion = new EntityAttributeVersion(_images);
         }
 
         public EntityManager(Entity preImage, Entity targetImage, Entity postImage, IEntityAttributeVersion entityAttributeVersion)
         {
-            PreImage = preImage;
-            PostImage = postImage;
-            TargetImage = targetImage;
+            _images = new[] { targetImage, postImage, preImage };
             EntityAttributeVersion = entityAttributeVersion;
         }
         #endregion
@@ -100,61 +94,6 @@ namespace MGXRM.Common.Framework
         public string GetLatestString(string attributeName)
         {
             return GetLatestImageVersion<string>(attributeName);
-        }
-
-        public bool ImageDateAfterToday(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ImageDateBeforeToday(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ImageDateInTheFuture(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ImageDateInThePast(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ImageValueEqualTo0(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ImageValueGreaterThan0(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsBeingAssigned()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsBeingSetAsNull(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsBeingSetOrUpdated(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveUpdateValue(string attributeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetOrUpdate(string attributeName, object value)
-        {
-            throw new NotImplementedException();
         }
         #endregion
     }

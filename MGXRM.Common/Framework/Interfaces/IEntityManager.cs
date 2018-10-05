@@ -14,17 +14,11 @@ namespace MGXRM.Common.Framework.Interfaces
         bool? GetLatestBool(string attributeName);
         string GetLatestString(string attributeName);
 
-        bool IsBeingSetOrUpdated(string attributeName);
-        bool IsBeingSetAsNull(string attributeName);
-        void SetOrUpdate(string attributeName, object value);
-        bool IsBeingAssigned();
+        //bool IsBeingSetOrUpdated(string attributeName);
+        //bool IsBeingSetAsNull(string attributeName);
+        //void SetOrUpdate(string attributeName, object value);
+        //bool IsBeingAssigned();
 
-        bool ImageDateInTheFuture(string attributeName);
-        bool ImageDateInThePast(string attributeName);
-        bool ImageDateAfterToday(string attributeName);
-        bool ImageDateBeforeToday(string attributeName);
-        bool ImageValueGreaterThan0(string attributeName);
-        bool ImageValueEqualTo0(string attributeName);
-        void RemoveUpdateValue(string attributeName);
+        //void RemoveSetOrUpdateValue(string attributeName);
     }
 }

@@ -25,36 +25,36 @@ namespace MGXRM.Common.Framework.Extensions
             return true;
         }
 
-        public static bool AttributeSameAs(object o, object value)
+        public static bool AttributeSameAs(object o, object compare)
         {
             switch (o)
             {
-                case null when value is null:
+                case null when compare is null:
                     return true;
-                case null when !(value is null):
+                case null when !(compare is null):
                     return false;
             }
 
-            if (value is null && !(o is null))
+            if (compare is null && !(o is null))
                 return false;
 
             var oType = o.GetType();
-            if(oType != value.GetType()) return false;
+            if(oType != compare.GetType()) return false;
 
             var areSame = false;
             new Dictionary<Type, Action>{
-                      {typeof(bool), () => areSame = ((bool)o) == ((bool)value)},
-                      {typeof(int),() => areSame =((int)o) == ((int)value)},
-                      {typeof(string),() => areSame =((string)o) == ((string)value)},
-                      {typeof(decimal),() => areSame =((decimal)o) == ((decimal)value)},
-                      {typeof(double),() => areSame =((double)o) == ((double)value)},
-                      {typeof(float),() => areSame =((float)o) == ((float)value)},
-                      {typeof(Guid), () =>  areSame = ((Guid)o) == ((Guid)value)},
-                      {typeof(OptionSetValue), () =>  areSame =  ((OptionSetValue)o).Value == ((OptionSetValue)value).Value},
-                      {typeof(DateTime), () =>  areSame =  ((DateTime)o).Ticks == ((DateTime)value).Ticks},
-                      {typeof(EntityReference), () =>  areSame = ((EntityReference)o).LogicalName == ((EntityReference)value).LogicalName
-                                                         && ((EntityReference)o).Id == ((EntityReference)value).Id},
-                      {typeof(Money), () =>  areSame =  ((Money)o).Value == ((Money)value).Value},
+                      {typeof(bool), () => areSame = ((bool)o) == ((bool)compare)},
+                      {typeof(int),() => areSame =((int)o) == ((int)compare)},
+                      {typeof(string),() => areSame =((string)o) == ((string)compare)},
+                      {typeof(decimal),() => areSame =((decimal)o) == ((decimal)compare)},
+                      {typeof(double),() => areSame =((double)o) == ((double)compare)},
+                      {typeof(float),() => areSame =((float)o) == ((float)compare)},
+                      {typeof(Guid), () =>  areSame = ((Guid)o) == ((Guid)compare)},
+                      {typeof(OptionSetValue), () =>  areSame =  ((OptionSetValue)o).Value == ((OptionSetValue)compare).Value},
+                      {typeof(DateTime), () =>  areSame =  ((DateTime)o).Ticks == ((DateTime)compare).Ticks},
+                      {typeof(EntityReference), () =>  areSame = ((EntityReference)o).LogicalName == ((EntityReference)compare).LogicalName
+                                                         && ((EntityReference)o).Id == ((EntityReference)compare).Id},
+                      {typeof(Money), () =>  areSame =  ((Money)o).Value == ((Money)compare).Value},
                }[oType]();
             return areSame;
         }
@@ -83,7 +83,7 @@ namespace MGXRM.Common.Framework.Extensions
 
             foreach (var attribute in imageToImpose.Attributes)
             {
-                if (!imposeNullValues && (!imageToImpose.Attributes.ContainsKey(attribute.Key) || imageToImpose[attribute.Key] == null))
+                if (SkipAttribute(imageToImpose, attribute, imposeNullValues))
                     continue;
                 if (!copy.Attributes.Contains(attribute.Key))
                     copy.Attributes.Add(attribute.Key, attribute.Value);
@@ -93,14 +93,25 @@ namespace MGXRM.Common.Framework.Extensions
             return copy;
         }
 
-        public static bool HasNonNullValue(this Entity entity, string attributeName)
+        private static bool SkipAttribute(Entity imageToImpose, KeyValuePair<string, object> attribute, bool imposeNullValues)
         {
-            return entity != null && entity.Contains(attributeName) && entity[attributeName] != null;
+            return !imposeNullValues
+                   && (!imageToImpose.Attributes.ContainsKey(attribute.Key)
+                       || imageToImpose[attribute.Key] == null);
         }
 
-        public static bool RemoveValue(this Entity entity, string attributeName)
+        public static bool HasNonNullValue(this Entity entity, string attributeName)
         {
-            if (entity == null || !entity.Contains(attributeName)) return false;
+            return entity != null 
+                   && entity.Contains(attributeName) 
+                   && entity[attributeName] != null;
+        }
+
+        public static bool RemoveAttribute(this Entity entity, string attributeName)
+        {
+            if (entity == null 
+                || !entity.Contains(attributeName))
+                return false;
             entity.Attributes.Remove(attributeName);
             return true;
 

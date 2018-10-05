@@ -107,7 +107,32 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         public void HasNonNullValue_Returns_False_If_Not_Found()
         {
             Entity entity = null;
-            Assert.False(entity.HasNonNullValue("mgxrm_randon"));
+            Assert.False(entity.HasNonNullValue(FieldName));
+        }
+
+        [Fact]
+        public void RemoveAttribute_Returns_False_If_Entity_Null()
+        {
+            Entity entity = null;
+            Assert.False(entity.RemoveAttribute(FieldName));
+        }
+
+        [Fact]
+        public void RemoveAttribute_Returns_False_If_Attribute_Not_Found()
+        {
+            var entity = new Entity(EntityName);
+            Assert.False(entity.Contains(FieldName));
+            Assert.False(entity.RemoveAttribute(FieldName));
+        }
+
+        [Fact]
+        public void RemoveAttribute_Returns_True_If_Attribute_Removed()
+        {
+            var entity = new Entity(EntityName);
+            entity.Attributes.Add(FieldName,true);
+            Assert.True(entity.Contains(FieldName));
+            Assert.True(entity.RemoveAttribute(FieldName));
+            Assert.False(entity.Contains(FieldName));
         }
     }
 

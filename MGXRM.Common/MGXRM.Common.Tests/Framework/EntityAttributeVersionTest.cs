@@ -1,5 +1,5 @@
 ﻿using System;
-using MGXRM.Common.Framework;
+using MGXRM.Common.Framework.ImageManagement;
 using Microsoft.Xrm.Sdk;
 using Xunit;
 
@@ -13,25 +13,25 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Selects_TargetImage_Value_First()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             targetImage.Attributes.Add(FieldName, "target");
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             postImage.Attributes.Add(FieldName, "post");
 
-            var eav = new EntityAttributeVersion(targetImage,postImage,preImage);
+            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
             Assert.Equal("target", eav.GetLatestImageVersion(FieldName));
         }
 
         [Fact]
         public void GetLatestImageVersion_Selects_TargetImage_Value_If_Present_And_Null()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             targetImage.Attributes.Add(FieldName, null);
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             postImage.Attributes.Add(FieldName, "post");
 
             Assert.Null(targetImage[FieldName]);
@@ -44,10 +44,10 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Selects_PostImage_Value_If_Present_And_No_Target()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, "pre");
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             postImage.Attributes.Add(FieldName, "post");
 
             Assert.False(targetImage.Attributes.ContainsKey(FieldName));
@@ -58,15 +58,14 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Selects_PostImage_Value_If_Present_And_Null()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, "pre");
 
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             postImage.Attributes.Add(FieldName, null);
 
             Assert.Null(postImage[FieldName]);
             var eav = new EntityAttributeVersion(null, postImage, preImage);
-            var em = new EntityManager<Entity>(preImage, null, postImage);
 
             Assert.Null(eav.GetLatestImageVersion(FieldName));
         }
@@ -74,11 +73,11 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Selects_PreImage_Value_If_Present_And_No_Target_Or_Post()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, "pre");
 
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
 
             var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
 
@@ -88,7 +87,7 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Selects_PreImage_Value_If_Present_And_Null()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             preImage.Attributes.Add(FieldName, null);
 
             Assert.Null(preImage[FieldName]);
@@ -100,9 +99,9 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersion_Returns_Null_If_Cannot_Find_In_An_Image()
         {
-            var preImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
-            var postImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var preImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
+            var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
 
             Assert.False(preImage.Attributes.ContainsKey(FieldName));
             Assert.False(targetImage.Attributes.ContainsKey(FieldName));
@@ -114,7 +113,7 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersionGenerics_Casts_Class()
         {
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             targetImage["mgxrm_entityref"] = new EntityReference("contact");
 
             var eav = new EntityAttributeVersion(targetImage, null, null);
@@ -125,7 +124,7 @@ namespace MGXRM.Common.Tests.Framework
         [Fact]
         public void GetLatestImageVersionGenerics_Returns_Null_If_Not_Found()
         {
-            var targetImage = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             var eav = new EntityAttributeVersion(targetImage, null, null);
             var er = eav.GetLatestImageVersion<EntityReference>(FieldName);
             Assert.Null(er);
