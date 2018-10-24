@@ -158,7 +158,7 @@ namespace MGXRM.Common.Tests.Framework
         }
 
         [Fact]
-        public void CombinedImageUsesTargetOverPostOverPre()
+        public void CombinedImage_Uses_Target_Over_Post_Over_Pre()
         {
             var targetImage = new Entity(EntityName);
             targetImage.AddAttribute("target", null);
