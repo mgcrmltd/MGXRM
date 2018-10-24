@@ -1,12 +1,12 @@
-﻿using Microsoft.Xrm.Sdk;
-using System;
-using Xunit;
+﻿using System;
 using FakeItEasy;
 using FakeXrmEasy.Extensions;
 using MGXRM.Common.Framework.ImageManagement;
 using MGXRM.Common.Framework.Interfaces;
+using Microsoft.Xrm.Sdk;
+using Xunit;
 
-namespace MGXRM.Common.Tests.Framework
+namespace MGXRM.Common.Tests.Framework.ImageManagement
 {
     public class ImageManagerTest
     {

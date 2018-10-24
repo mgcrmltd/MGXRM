@@ -3,7 +3,7 @@ using MGXRM.Common.Framework.ImageManagement;
 using Microsoft.Xrm.Sdk;
 using Xunit;
 
-namespace MGXRM.Common.Tests.Framework
+namespace MGXRM.Common.Tests.Framework.ImageManagement
 {
     public class ImageAttributeVersionTest
     {

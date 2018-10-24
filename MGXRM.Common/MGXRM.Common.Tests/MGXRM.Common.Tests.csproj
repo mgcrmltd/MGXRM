@@ -99,9 +99,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\ImageAttributeVersionTest.cs" />
-    <Compile Include="Framework\ImageManagerTest.cs" />
+    <Compile Include="Framework\ImageManagement\ImageAttributeVersionTest.cs" />
+    <Compile Include="Framework\ImageManagement\ImageManagerTest.cs" />
     <Compile Include="Framework\Extensions\EntityEntensionsTest.cs" />
+    <Compile Include="Framework\Repositories\RepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
