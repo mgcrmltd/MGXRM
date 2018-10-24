@@ -330,6 +330,5 @@ ASALocalRun/
 .mfractor/
 *.DotSettings
 
-# Local Script Variables
+# Local settings
 LocalCommonVariables.ps1
-

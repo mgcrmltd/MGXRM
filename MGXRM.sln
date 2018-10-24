@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common", "MGXRM.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common.Tests", "MGXRM.Common\MGXRM.Common.Tests\MGXRM.Common.Tests.csproj", "{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MGXRM.Scripts", "MGXRM.Scripts", "{31EBC327-9FBA-4B50-8635-A44FE4EF4F2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SetUp", "SetUp", "{59CB4823-3724-48E5-B50A-C548F981F10E}"
+	ProjectSection(SolutionItems) = preProject
+		MGXRM.Scripts\SetUp\CreateCommonVariables.ps1 = MGXRM.Scripts\SetUp\CreateCommonVariables.ps1
+		MGXRM.Scripts\SetUp\InstallXrmTools.ps1 = MGXRM.Scripts\SetUp\InstallXrmTools.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +38,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{59CB4823-3724-48E5-B50A-C548F981F10E} = {31EBC327-9FBA-4B50-8635-A44FE4EF4F2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D92908A-6266-4762-BB96-8F2180F2FBAD}
