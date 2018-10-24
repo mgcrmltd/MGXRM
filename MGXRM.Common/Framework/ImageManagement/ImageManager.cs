@@ -6,11 +6,11 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ImageManagement
 {
-    public class EntityManager<T> : IEntityAttributeVersion, IEntityManager<T> where T : Entity
+    public class ImageManager<T> : IImageAttributeVersion, IImageManager<T> where T : Entity
     {
         #region Members and Properties
         private readonly Entity[] _images;
-        protected IEntityAttributeVersion EntityAttributeVersion;
+        protected IImageAttributeVersion ImageAttributeVersion;
         public Entity CombinedImageEntity {
             get
             {
@@ -22,28 +22,28 @@ namespace MGXRM.Common.Framework.ImageManagement
 
         #region Constructors
 
-        public EntityManager(Entity preImage, Entity targetImage, Entity postImage)
+        public ImageManager(Entity preImage, Entity targetImage, Entity postImage)
         {
             _images = new[] {targetImage, postImage, preImage};
-            EntityAttributeVersion = new EntityAttributeVersion(_images);
+            ImageAttributeVersion = new ImageAttributeVersion(_images);
         }
 
-        public EntityManager(Entity preImage, Entity targetImage, Entity postImage, IEntityAttributeVersion entityAttributeVersion)
+        public ImageManager(Entity preImage, Entity targetImage, Entity postImage, IImageAttributeVersion imageAttributeVersion)
         {
             _images = new[] { targetImage, postImage, preImage };
-            EntityAttributeVersion = entityAttributeVersion;
+            ImageAttributeVersion = imageAttributeVersion;
         }
         #endregion
 
         #region Methods
         public object GetLatestImageVersion(string attributeName)
         { 
-            return EntityAttributeVersion.GetLatestImageVersion(attributeName);
+            return ImageAttributeVersion.GetLatestImageVersion(attributeName);
         }
 
         public T1 GetLatestImageVersion<T1>(string attributeName) where T1 : class
         {
-            return EntityAttributeVersion.GetLatestImageVersion<T1>(attributeName);
+            return ImageAttributeVersion.GetLatestImageVersion<T1>(attributeName);
         }
 
         public bool? GetLatestBool(string attributeName)

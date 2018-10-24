@@ -41,11 +41,15 @@ namespace MGXRM.Common.Tests.Framework.Extensions
         public void SameAs_Returns_False_If_Attributes_Not_Same()
         {
             var id = Guid.NewGuid();
-            var originalEntity = new Entity() { Id = id, LogicalName = EntityName };
+            var originalEntity = new Entity() {Id = id, LogicalName = EntityName};
             originalEntity.Attributes.Add(FieldName, "one");
-            Entity otherEntity = new Entity() { Id = id, LogicalName = EntityName };
+            var otherEntity = new Entity() {Id = id, LogicalName = EntityName};
             otherEntity.Attributes.Add(FieldName, "two");
             Assert.False(originalEntity.SameAs(otherEntity));
+
+            var entityReference = originalEntity.Contains("mgxrm_contactid")
+                ? originalEntity["mgxrm_contactid"]
+                : null;
         }
 
         [Theory]

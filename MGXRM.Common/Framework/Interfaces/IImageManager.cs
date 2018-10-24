@@ -3,7 +3,9 @@ using System;
 
 namespace MGXRM.Common.Framework.Interfaces
 {
-    public interface IEntityManager<T>  where T : Entity
+    public enum ImageType { Pre, Target, Post}
+
+    public interface IImageManager<T>  where T : Entity
     {
         int? GetLatestInt(string attributeName);
         EntityReference GetLatestEntityReference(string attributeName);

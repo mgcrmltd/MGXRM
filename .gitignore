@@ -329,3 +329,7 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 *.DotSettings
+
+# Local Script Variables
+LocalCommonVariables.ps1
+

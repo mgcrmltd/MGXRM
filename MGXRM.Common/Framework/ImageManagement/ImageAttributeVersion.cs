@@ -4,11 +4,11 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ImageManagement
 {
-    public class EntityAttributeVersion : IEntityAttributeVersion
+    public class ImageAttributeVersion : IImageAttributeVersion
     {
         private readonly Entity[] _images;
 
-        public EntityAttributeVersion(params Entity[] entitiesInOrder)
+        public ImageAttributeVersion(params Entity[] entitiesInOrder)
         {
             _images = entitiesInOrder;
         }

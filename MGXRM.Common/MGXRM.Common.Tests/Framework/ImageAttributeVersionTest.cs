@@ -5,7 +5,7 @@ using Xunit;
 
 namespace MGXRM.Common.Tests.Framework
 {
-    public class EntityAttributeVersionTest
+    public class ImageAttributeVersionTest
     {
         protected const string EntityName = "mgxrm_Entity";
         protected const string FieldName = "mgxrm_description";
@@ -20,7 +20,7 @@ namespace MGXRM.Common.Tests.Framework
             var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             postImage.Attributes.Add(FieldName, "post");
 
-            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
+            var eav = new ImageAttributeVersion(targetImage, postImage, preImage);
             Assert.Equal("target", eav.GetLatestImageVersion(FieldName));
         }
 
@@ -36,7 +36,7 @@ namespace MGXRM.Common.Tests.Framework
 
             Assert.Null(targetImage[FieldName]);
 
-            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
+            var eav = new ImageAttributeVersion(targetImage, postImage, preImage);
 
             Assert.Null(eav.GetLatestImageVersion(FieldName));
         }
@@ -51,7 +51,7 @@ namespace MGXRM.Common.Tests.Framework
             postImage.Attributes.Add(FieldName, "post");
 
             Assert.False(targetImage.Attributes.ContainsKey(FieldName));
-            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
+            var eav = new ImageAttributeVersion(targetImage, postImage, preImage);
             Assert.Equal("post", eav.GetLatestImageVersion(FieldName));
         }
 
@@ -65,7 +65,7 @@ namespace MGXRM.Common.Tests.Framework
             postImage.Attributes.Add(FieldName, null);
 
             Assert.Null(postImage[FieldName]);
-            var eav = new EntityAttributeVersion(null, postImage, preImage);
+            var eav = new ImageAttributeVersion(null, postImage, preImage);
 
             Assert.Null(eav.GetLatestImageVersion(FieldName));
         }
@@ -79,7 +79,7 @@ namespace MGXRM.Common.Tests.Framework
             var postImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
 
-            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
+            var eav = new ImageAttributeVersion(targetImage, postImage, preImage);
 
             Assert.Equal("pre", eav.GetLatestImageVersion(FieldName));
         }
@@ -91,7 +91,7 @@ namespace MGXRM.Common.Tests.Framework
             preImage.Attributes.Add(FieldName, null);
 
             Assert.Null(preImage[FieldName]);
-            var eav = new EntityAttributeVersion(null, null, preImage);
+            var eav = new ImageAttributeVersion(null, null, preImage);
 
             Assert.Null(eav.GetLatestImageVersion(FieldName));
         }
@@ -106,7 +106,7 @@ namespace MGXRM.Common.Tests.Framework
             Assert.False(preImage.Attributes.ContainsKey(FieldName));
             Assert.False(targetImage.Attributes.ContainsKey(FieldName));
             Assert.False(postImage.Attributes.ContainsKey(FieldName));
-            var eav = new EntityAttributeVersion(targetImage, postImage, preImage);
+            var eav = new ImageAttributeVersion(targetImage, postImage, preImage);
             Assert.Null(eav.GetLatestImageVersion(FieldName));
         }
 
@@ -116,7 +116,7 @@ namespace MGXRM.Common.Tests.Framework
             var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
             targetImage["mgxrm_entityref"] = new EntityReference("contact");
 
-            var eav = new EntityAttributeVersion(targetImage, null, null);
+            var eav = new ImageAttributeVersion(targetImage, null, null);
             var er = eav.GetLatestImageVersion<EntityReference>("mgxrm_entityref");
             Assert.IsType<EntityReference>(er);
         }
@@ -125,7 +125,7 @@ namespace MGXRM.Common.Tests.Framework
         public void GetLatestImageVersionGenerics_Returns_Null_If_Not_Found()
         {
             var targetImage = new Entity() {Id = Guid.NewGuid(), LogicalName = EntityName};
-            var eav = new EntityAttributeVersion(targetImage, null, null);
+            var eav = new ImageAttributeVersion(targetImage, null, null);
             var er = eav.GetLatestImageVersion<EntityReference>(FieldName);
             Assert.Null(er);
         }
