@@ -74,12 +74,7 @@ namespace MGXRM.Common.Framework.Extensions
                 : new Entity(imageToImpose.LogicalName) { Id = imageToImpose.Id };
 
             if (originalImage != null)
-            {
-                foreach (var attribute in originalImage.Attributes)
-                {
-                    copy.Attributes.Add(attribute.Key, attribute.Value);
-                }
-            }
+                copy.Attributes.AddRange(originalImage.Attributes);
 
             foreach (var attribute in imageToImpose.Attributes)
             {
@@ -90,6 +85,7 @@ namespace MGXRM.Common.Framework.Extensions
                 else
                     copy[attribute.Key] = attribute.Value;
             }
+
             return copy;
         }
 

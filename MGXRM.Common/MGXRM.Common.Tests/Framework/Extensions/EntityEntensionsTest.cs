@@ -46,10 +46,6 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             var otherEntity = new Entity() {Id = id, LogicalName = EntityName};
             otherEntity.Attributes.Add(FieldName, "two");
             Assert.False(originalEntity.SameAs(otherEntity));
-
-            var entityReference = originalEntity.Contains("mgxrm_contactid")
-                ? originalEntity["mgxrm_contactid"]
-                : null;
         }
 
         [Theory]
@@ -91,6 +87,28 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             toImpose.Attributes.Add(FieldName, "one");
             var imposed = originalEntity.ImposeEntity(toImpose, imposeNullValues);
             Assert.True(EntityExtensions.SameAs(imposed, toImpose));
+        }
+
+        [Fact]
+        public void ImposeEntity_Imposes_Nulls_If_Specified()
+        {
+            var originalEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            originalEntity.Attributes.Add(FieldName, "one");
+            var imposeEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            imposeEntity.Attributes.Add(FieldName, null);
+            var imposed = originalEntity.ImposeEntity(imposeEntity);
+            Assert.Null(imposed[FieldName]);
+        }
+
+        [Fact]
+        public void ImposeEntity_Does_Not_Impose_Nulls_If_Specified()
+        {
+            var originalEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            originalEntity.Attributes.Add(FieldName, "one");
+            var imposeEntity = new Entity() { Id = Guid.NewGuid(), LogicalName = EntityName };
+            imposeEntity.Attributes.Add(FieldName, null);
+            var imposed = originalEntity.ImposeEntity(imposeEntity, false);
+            Assert.NotNull(imposed[FieldName]);
         }
 
         [Theory]
