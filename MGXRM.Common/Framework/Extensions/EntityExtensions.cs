@@ -112,5 +112,58 @@ namespace MGXRM.Common.Framework.Extensions
             return true;
 
         }
+
+        public static bool? GetBool(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            if (obj != null)
+                return ((bool)entity[attributeName]);
+            return null;
+        }
+
+        public static DateTime? GetDateTime(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            if (obj != null)
+                return ((DateTime)entity[attributeName]);
+            return null;
+        }
+
+        public static EntityReference GetEntityReference(this Entity entity, string attributeName)
+        {
+            return entity[attributeName] as EntityReference;
+        }
+
+        public static int? GetInt(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            if (obj != null)
+                return ((int)entity[attributeName]);
+            return null;
+        }
+
+        public static Money GetMoney(this Entity entity, string attributeName)
+        {
+            return entity[attributeName] as Money;
+        }
+
+        public static decimal? GetMoneyValue(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            return obj != null ? (entity[attributeName] as Money)?.Value : null;
+        }
+
+        public static OptionSetValue GetOptionSet(this Entity entity, string attributeName)
+        {
+            return entity[attributeName] as OptionSetValue;
+        }
+
+        public static string GetString(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            if (obj != null)
+                return ((string)entity[attributeName]);
+            return null;
+        }
     }
 }

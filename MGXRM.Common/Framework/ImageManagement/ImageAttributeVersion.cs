@@ -20,6 +20,13 @@ namespace MGXRM.Common.Framework.ImageManagement
                 select entity.Attributes[attributeName]).FirstOrDefault();
         }
 
+        public Entity GetLatestImage(string attributeName)
+        {
+            return (from entity in _images
+                where entity != null && entity.Attributes.ContainsKey(attributeName)
+                select entity).FirstOrDefault();
+        }
+
         public T GetLatestImageVersion<T>(string attributeName) where T : class
         {
             return GetLatestImageVersion(attributeName) as T;

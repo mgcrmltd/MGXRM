@@ -11,6 +11,9 @@ namespace MGXRM.Common.Framework.ImageManagement
         #region Members and Properties
         private readonly Entity[] _images;
         protected IImageAttributeVersion ImageAttributeVersion;
+        public Entity PreImage => GetImage(ImageType.Pre);
+        public Entity PostImage => GetImage(ImageType.Post);
+        public Entity TargetImage => GetImage(ImageType.Target);
         public Entity CombinedImageEntity {
             get
             {
@@ -41,6 +44,11 @@ namespace MGXRM.Common.Framework.ImageManagement
             return ImageAttributeVersion.GetLatestImageVersion(attributeName);
         }
 
+        public Entity GetLatestImage(string attributeName)
+        {
+            return ImageAttributeVersion.GetLatestImage(attributeName);
+        }
+
         public T1 GetLatestImageVersion<T1>(string attributeName) where T1 : class
         {
             return ImageAttributeVersion.GetLatestImageVersion<T1>(attributeName);
@@ -48,53 +56,49 @@ namespace MGXRM.Common.Framework.ImageManagement
 
         public bool? GetLatestBool(string attributeName)
         {
-            var obj = GetLatestImageVersion(attributeName);
-            if (obj != null)
-                return ((bool)GetLatestImageVersion(attributeName));
-            return null;
+            return GetLatestImage(attributeName)?.GetBool(attributeName);
         }
 
         public DateTime? GetLatestDate(string attributeName)
         {
-            var obj = GetLatestImageVersion(attributeName);
-            if (obj != null)
-                return ((DateTime)GetLatestImageVersion(attributeName));
-            return null;
+            return GetLatestImage(attributeName)?.GetDateTime(attributeName);
         }
 
         public EntityReference GetLatestEntityReference(string attributeName)
         {
-            return GetLatestImageVersion<EntityReference>(attributeName);
+            return GetLatestImage(attributeName)?.GetEntityReference(attributeName);
         }
         
         public int? GetLatestInt(string attributeName)
         {
-            var obj = GetLatestImageVersion(attributeName);
-            return (int?)obj;
+            return GetLatestImage(attributeName)?.GetInt(attributeName);
         }
 
         public Money GetLatestMoney(string attributeName)
         {
-            return GetLatestImageVersion<Money>(attributeName);
+            return GetLatestImage(attributeName)?.GetMoney(attributeName);
         }
 
         public decimal? GetLatestMoneyValue(string attributeName)
         {
-            var obj = GetLatestImageVersion(attributeName);
-            if (obj != null)
-                return ((Money)GetLatestImageVersion(attributeName)).Value;
-            return null;
+            return GetLatestImage(attributeName)?.GetMoneyValue(attributeName);
         }
 
         public OptionSetValue GetLatestOptionSet(string attributeName)
         {
-            return GetLatestImageVersion<OptionSetValue>(attributeName);
+            return GetLatestImage(attributeName)?.GetOptionSet(attributeName);
         }
 
         public string GetLatestString(string attributeName)
         {
-            return GetLatestImageVersion<string>(attributeName);
+            return GetLatestImage(attributeName)?.GetString(attributeName);
         }
+
+        public Entity GetImage(ImageType type)
+        {
+            return _images.ElementAtOrDefault((int) type);
+        }
+
         #endregion
     }
 }

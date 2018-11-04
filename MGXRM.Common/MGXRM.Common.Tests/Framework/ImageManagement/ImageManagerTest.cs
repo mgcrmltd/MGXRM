@@ -12,6 +12,19 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
     {
         protected const string EntityName = "mgxrm_Entity";
         protected const string FieldName = "mgxrm_field";
+        protected Entity FullEntity;
+
+        public ImageManagerTest()
+        {
+            FullEntity = new Entity(EntityName);
+            FullEntity["bool"] = true;
+            FullEntity["dateTime"] = DateTime.Now;
+            FullEntity["entityReference"] = new EntityReference(EntityName, Guid.NewGuid());
+            FullEntity["int"] = 1;
+            FullEntity["money"] = new Money((decimal)10.5);
+            FullEntity["string"] = "Hello World";
+            FullEntity["optionSetValue"] = new OptionSetValue(1);
+        }
 
         [Fact]
         public void GetLatestImageVersion_Calls_IEntityAttributeVersion_GetLatestImageVersion()
@@ -26,15 +39,15 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
         }
 
         [Fact]
-        public void GetLatestBool_Calls_IEntityAttributeVersion_GetLatestImageVersion_And_Casts()
+        public void GetLatestBool_Calls_IEntityAttributeVersion_GetLatestImage_And_Casts()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(true);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            var val = em.GetLatestBool(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestBool("bool");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("bool")).MustHaveHappened();
             Assert.IsType<bool>(val);
         }
 
@@ -47,15 +60,15 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
         }
 
         [Fact]
-        public void GetLatestDate_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestDate_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(DateTime.Now);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            var val = em.GetLatestDate(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestDate("dateTime");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("dateTime")).MustHaveHappened();
             Assert.IsType<DateTime>(val);
         }
 
@@ -68,39 +81,39 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
         }
 
         [Fact]
-        public void GetLatestEntityReference_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestEntityReference_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            em.GetLatestEntityReference(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            em.GetLatestEntityReference("entityReference");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<EntityReference>(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("entityReference")).MustHaveHappened();
         }
 
         [Fact]
-        public void GetLatestInt_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestInt_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(1);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            em.GetLatestInt(FieldName);
+            var em = new ImageManager<Entity>(null, FullEntity, null, entityAttributeVersionFake);
+            em.GetLatestInt("int");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("int")).MustHaveHappened();
         }
         
         [Fact]
-        public void GetLatestMoney_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestMoney_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(new Money(10));
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            var val = em.GetLatestMoney(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestMoney("money");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<Money>(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("money")).MustHaveHappened();
             Assert.IsType<Money>(val);
         }
 
@@ -113,15 +126,15 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
         }
 
         [Fact]
-        public void GetLatestMoneyValue_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestMoneyValue_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(new Money(10));
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            var val = em.GetLatestMoneyValue(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestMoneyValue("money");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("money")).MustHaveHappened();
             Assert.IsType<decimal>(val);
         }
 
@@ -134,27 +147,29 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
         }
 
         [Fact]
-        public void GetLatestOptionSet_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        public void GetLatestOptionSet_Calls_IEntityAttributeVersion_GetLatestImage()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            em.GetLatestOptionSet(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestOptionSet("optionSetValue");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<OptionSetValue>(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("optionSetValue")).MustHaveHappened();
+            Assert.IsType<OptionSetValue>(val);
         }
 
         [Fact]
         public void GetLatestString_Calls_IEntityAttributeVersion_GetLatestImageVersion()
         {
             var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns(null);
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
 
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            em.GetLatestString(FieldName);
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestString("string");
 
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion<string>(FieldName)).MustHaveHappened();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("string")).MustHaveHappened();
+            Assert.IsType<string>(val);
         }
 
         [Fact]
@@ -176,6 +191,72 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             Assert.Equal(em.CombinedImageEntity["target"], targetImage["target"]);
             Assert.Equal(em.CombinedImageEntity["post"], postImage["post"]);
             Assert.Equal(em.CombinedImageEntity["pre"], preImage["pre"]);
+        }
+
+        [Theory]
+        [InlineData(ImageType.Pre, 2)]
+        [InlineData(ImageType.Post, 1)]
+        [InlineData(ImageType.Target, 0)]
+        public void ImageType_Values_Correct(ImageType type, int value)
+        {
+            Assert.Equal((int)type, value);
+        }
+
+        [Theory]
+        [InlineData(ImageType.Pre, "PRE")]
+        [InlineData(ImageType.Post, "POST")]
+        [InlineData(ImageType.Target, "TARGET")]
+        public void GetImage_Returns_Specified_Image(ImageType type, string logicalName)
+        {
+            var preImage = new Entity("PRE");
+            var postImage = new Entity("POST");
+            var targetImage = new Entity("TARGET");
+
+            var imageManager = new ImageManager<Entity>(preImage,targetImage,postImage);
+            Assert.Equal(imageManager.GetImage(type).LogicalName, logicalName);
+        }
+
+        [Theory]
+        [InlineData(ImageType.Pre)]
+        [InlineData(ImageType.Post)]
+        [InlineData(ImageType.Target)]
+        public void GetImage_Returns_Null_If_Absent(ImageType type)
+        {
+            var imageManager = new ImageManager<Entity>(null, null, null);
+            Assert.Null(imageManager.GetImage(type));
+        }
+        
+        [Fact]
+        public void PreImage_Returns_PreImage()
+        {
+            var preImage = new Entity("PRE");
+            var postImage = new Entity("POST");
+            var targetImage = new Entity("TARGET");
+
+            var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
+            Assert.Equal(imageManager.PreImage, preImage);
+        }
+
+        [Fact]
+        public void PostImage_Returns_PostImage()
+        {
+            var preImage = new Entity("PRE");
+            var postImage = new Entity("POST");
+            var targetImage = new Entity("TARGET");
+
+            var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
+            Assert.Equal(imageManager.PostImage, postImage);
+        }
+
+        [Fact]
+        public void TargetImage_Returns_TargetImage()
+        {
+            var preImage = new Entity("PRE");
+            var postImage = new Entity("POST");
+            var targetImage = new Entity("TARGET");
+
+            var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
+            Assert.Equal(imageManager.TargetImage, targetImage);
         }
 
     }
