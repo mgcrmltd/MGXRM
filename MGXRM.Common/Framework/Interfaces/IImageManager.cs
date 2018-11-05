@@ -21,11 +21,9 @@ namespace MGXRM.Common.Framework.Interfaces
         Entity PostImage { get; }
         Entity TargetImage { get; }
 
-        //bool IsBeingSetOrUpdated(string attributeName);
-        //bool IsBeingSetAsNull(string attributeName);
-        //void SetOrUpdate(string attributeName, object value);
-        //bool IsBeingAssigned();
-
-        //void RemoveSetOrUpdateValue(string attributeName);
+        bool IsBeingSetOrUpdated(string attributeName);
+        bool IsBeingSetAsNull(string attributeName);
+        void SetOrUpdate(string attributeName, object value);
+        void RemoveSetOrUpdateValue(string attributeName);
     }
 }

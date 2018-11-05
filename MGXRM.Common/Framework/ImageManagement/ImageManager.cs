@@ -24,7 +24,6 @@ namespace MGXRM.Common.Framework.ImageManagement
         #endregion
 
         #region Constructors
-
         public ImageManager(Entity preImage, Entity targetImage, Entity postImage)
         {
             _images = new[] {targetImage, postImage, preImage};
@@ -97,6 +96,30 @@ namespace MGXRM.Common.Framework.ImageManagement
         public Entity GetImage(ImageType type)
         {
             return _images.ElementAtOrDefault((int) type);
+        }
+
+        public bool IsBeingSetOrUpdated(string attributeName)
+        {
+            if (TargetImage == null) return false;
+            return TargetImage.Contains(attributeName);
+        }
+
+        public bool IsBeingSetAsNull(string attributeName)
+        {
+            if (!IsBeingSetOrUpdated(attributeName)) return false;
+            return TargetImage[attributeName] == null;
+        }
+
+        public void SetOrUpdate(string attributeName, object value)
+        {
+            if(TargetImage == null) throw new InvalidPluginExecutionException("No target image to update");
+            TargetImage[attributeName] = value;
+        }
+
+        public void RemoveSetOrUpdateValue(string attributeName)
+        {
+            if (TargetImage == null) throw new InvalidPluginExecutionException("No target image to remove value from");
+            TargetImage.RemoveAttribute(attributeName);
         }
 
         #endregion

@@ -10,10 +10,10 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
 {
     public class ImageManagerTest
     {
+        #region Members and constructors
         protected const string EntityName = "mgxrm_Entity";
         protected const string FieldName = "mgxrm_field";
         protected Entity FullEntity;
-
         public ImageManagerTest()
         {
             FullEntity = new Entity(EntityName);
@@ -25,19 +25,9 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             FullEntity["string"] = "Hello World";
             FullEntity["optionSetValue"] = new OptionSetValue(1);
         }
+        #endregion
 
-        [Fact]
-        public void GetLatestImageVersion_Calls_IEntityAttributeVersion_GetLatestImageVersion()
-        {
-            var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns("pre");
-
-            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
-            em.GetLatestImageVersion(FieldName);
-
-            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
-        }
-
+        #region GetLatestAttribute tests
         [Fact]
         public void GetLatestBool_Calls_IEntityAttributeVersion_GetLatestImage_And_Casts()
         {
@@ -171,6 +161,20 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             A.CallTo(() => entityAttributeVersionFake.GetLatestImage("string")).MustHaveHappened();
             Assert.IsType<string>(val);
         }
+        #endregion
+
+        #region Get Image tests
+        [Fact]
+        public void GetLatestImageVersion_Calls_IEntityAttributeVersion_GetLatestImageVersion()
+        {
+            var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(A<string>._)).Returns("pre");
+
+            var em = new ImageManager<Entity>(null, null, null, entityAttributeVersionFake);
+            em.GetLatestImageVersion(FieldName);
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImageVersion(FieldName)).MustHaveHappened();
+        }
 
         [Fact]
         public void CombinedImage_Uses_Target_Over_Post_Over_Pre()
@@ -258,6 +262,105 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
             Assert.Equal(imageManager.TargetImage, targetImage);
         }
+        #endregion
 
+        #region Set and update tests
+        [Fact]
+        public void IsBeingSetOrUpdated_Returns_False_If_No_Target_Image()
+        {
+            var imageManager = new ImageManager<Entity>(null, null, null);
+            Assert.Null(imageManager.TargetImage);
+            Assert.False(imageManager.IsBeingSetOrUpdated(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetOrUpdated_Returns_False_If_Target_Does_Not_Contain_Attribute()
+        {
+            var imageManager = new ImageManager<Entity>(null, new Entity("TARGET"), null);
+            Assert.False(imageManager.TargetImage.Contains(FieldName));
+            Assert.False(imageManager.IsBeingSetOrUpdated(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetOrUpdated_Returns_True_If_Target_Contains_Attribute()
+        {
+            var targetImage = new Entity("TARGET");
+            targetImage[FieldName] = 1;
+
+            var imageManager = new ImageManager<Entity>(null, targetImage, null);
+            Assert.True(imageManager.TargetImage.Contains(FieldName));
+            Assert.True(imageManager.IsBeingSetOrUpdated(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetOrUpdated_Returns_True_If_Target_Contains_Null_Attribute()
+        {
+            var targetImage = new Entity("TARGET");
+            targetImage[FieldName] = null;
+
+            var imageManager = new ImageManager<Entity>(null, targetImage, null);
+            Assert.True(imageManager.TargetImage.Contains(FieldName));
+            Assert.True(imageManager.IsBeingSetOrUpdated(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetAsNull_Returns_False_If_Not_In_Target_Or_Target_Null()
+        {
+            var imageManager = new ImageManager<Entity>(null, new Entity("TARGET"), null);
+            Assert.False(imageManager.TargetImage.Contains(FieldName));
+            Assert.False(imageManager.IsBeingSetAsNull(FieldName));
+
+            imageManager = new ImageManager<Entity>(null, null, null);
+            Assert.Null(imageManager.TargetImage);
+            Assert.False(imageManager.IsBeingSetAsNull(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetAsNull_Returns_False_If_In_Target_But_Not_Null()
+        {
+            var targetImage = new Entity("TARGET");
+            targetImage[FieldName] = 1;
+
+            var imageManager = new ImageManager<Entity>(null, targetImage, null);
+            Assert.True(imageManager.TargetImage.Contains(FieldName));
+            Assert.NotNull(imageManager.TargetImage[FieldName]);
+            Assert.False(imageManager.IsBeingSetAsNull(FieldName));
+        }
+
+        [Fact]
+        public void IsBeingSetAsNull_Returns_True_If_In_Target_And_Null()
+        {
+            var targetImage = new Entity("TARGET");
+            targetImage[FieldName] = null;
+
+            var imageManager = new ImageManager<Entity>(null, targetImage, null);
+            Assert.True(imageManager.TargetImage.Contains(FieldName));
+            Assert.Null(imageManager.TargetImage[FieldName]);
+            Assert.True(imageManager.IsBeingSetAsNull(FieldName));
+        }
+
+        [Fact]
+        public void SetOrUpdate_Throws_Exception_If_No_Target_Image()
+        {
+            var imageManager = new ImageManager<Entity>(null, null, null);
+            Assert.Throws<InvalidPluginExecutionException>(() => imageManager.SetOrUpdate(FieldName, 1));
+        }
+
+        [Fact]
+        public void SetOrUpdate_Sets_Value_In_Target_Image()
+        {
+            var imageManager = new ImageManager<Entity>(null, new Entity(EntityName), null);
+            Assert.False(imageManager.TargetImage.Contains(FieldName));
+            imageManager.SetOrUpdate(FieldName, 1);
+            Assert.True(imageManager.TargetImage.Contains(FieldName));
+        }
+
+        [Fact]
+        public void RemoveSetOrUpdateValue_Throws_Exception_If_No_Target_Image()
+        {
+            var imageManager = new ImageManager<Entity>(null, null, null);
+            Assert.Throws<InvalidPluginExecutionException>(() => imageManager.RemoveSetOrUpdateValue(FieldName));
+        }
+        #endregion
     }
 }

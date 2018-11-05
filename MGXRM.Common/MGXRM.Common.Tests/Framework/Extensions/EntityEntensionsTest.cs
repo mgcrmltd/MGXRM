@@ -7,10 +7,37 @@ using System.Collections;
 
 namespace MGXRM.Common.Tests.Framework.Extensions
 {
-    public class EntityEntensionsTest
+    public class EntityExtensionsTest
     {
         public static string EntityName = "mgxrm_Entity";
         public static string FieldName = "mgxrm_description";
+
+        protected Entity FullEntity;
+        protected Entity NullEntity;
+        public EntityExtensionsTest()
+        {
+            FullEntity = new Entity(EntityName)
+            {
+                ["bool"] = true,
+                ["dateTime"] = DateTime.Now,
+                ["entityReference"] = new EntityReference(EntityName, Guid.NewGuid()),
+                ["int"] = 1,
+                ["money"] = new Money((decimal) 10.5),
+                ["string"] = "Hello World",
+                ["optionSetValue"] = new OptionSetValue(1)
+            };
+
+            NullEntity = new Entity(EntityName)
+            {
+                ["bool"] = null,
+                ["dateTime"] = null,
+                ["entityReference"] = null,
+                ["int"] = null,
+                ["money"] = null,
+                ["string"] = null,
+                ["optionSetValue"] = null
+            };
+        }
 
         [Fact]
         public void SameAs_Returns_False_If_OtherEntity_Null()
@@ -156,6 +183,64 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             Assert.True(entity.RemoveAttribute(FieldName));
             Assert.False(entity.Contains(FieldName));
         }
+
+        #region Get attribute tests
+        [Fact]
+        public void GetBool_Returns_And_Casts_And_Handles_Null()
+        {
+           Assert.IsType<bool>(FullEntity.GetBool("bool"));
+            Assert.Null(NullEntity.GetBool("bool"));
+        }
+
+        [Fact]
+        public void GetDate_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<DateTime>(FullEntity.GetDateTime("dateTime"));
+            Assert.Null(NullEntity.GetDateTime("dateTime"));
+        }
+
+        [Fact]
+        public void GetEntityReference_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<EntityReference>(FullEntity.GetEntityReference("entityReference"));
+            Assert.Null(NullEntity.GetEntityReference("entityReference"));
+        }
+
+        [Fact]
+        public void GetInt_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<int>(FullEntity.GetInt("int"));
+            Assert.Null(NullEntity.GetInt("int"));
+        }
+
+        [Fact]
+        public void GetMoney_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<Money>(FullEntity.GetMoney("money"));
+            Assert.Null(NullEntity.GetMoney("money"));
+        }
+
+        [Fact]
+        public void GetMoneyValue_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<decimal>(FullEntity.GetMoneyValue("money"));
+            Assert.Null(NullEntity.GetMoneyValue("money"));
+        }
+
+        [Fact]
+        public void GetOptionSet_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<OptionSetValue>(FullEntity.GetOptionSet("optionSetValue"));
+            Assert.Null(NullEntity.GetOptionSet("optionSetValue"));
+        }
+        
+        [Fact]
+        public void GetString_Returns_And_Casts_And_Handles_Null()
+        {
+            Assert.IsType<string>(FullEntity.GetString("string"));
+            Assert.Null(NullEntity.GetString("string"));
+        }
+        #endregion
     }
 
 
@@ -190,9 +275,9 @@ namespace MGXRM.Common.Tests.Framework.Extensions
             yield return new object[] { null, 1, false };
             yield return new object[] { new Money((decimal)10.50), new Money((decimal)10.50), true };
             yield return new object[] { new Money((decimal)10.50), new Money((decimal)3.75), false };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, true };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid2, LogicalName = EntityEntensionsTest.EntityName }, false };
-            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityEntensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_OtherEntity" }, false };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityExtensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = EntityExtensionsTest.EntityName }, true };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityExtensionsTest.EntityName }, new EntityReference() { Id = _guid2, LogicalName = EntityExtensionsTest.EntityName }, false };
+            yield return new object[] { new EntityReference() { Id = _guid1, LogicalName = EntityExtensionsTest.EntityName }, new EntityReference() { Id = _guid1, LogicalName = "mgxrm_OtherEntity" }, false };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(187187187), true };
             yield return new object[] { new OptionSetValue(187187187), new OptionSetValue(999999999), false };
             yield return new object[] { new DateTime(2018,01,01), new DateTime(2018, 01, 01), true };
