@@ -11,6 +11,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
 {
     public class WorkflowContextManagerTest
     {
+        #region Members and Setup
         private IWorkflowContext _fakeWorkflowContext;
         private IOrganizationService _fakeOrganizationService;
         private WorkflowContextManager _manager;
@@ -48,6 +49,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
 
             _manager = new WorkflowContextManager(_fakeWorkflowContext, _fakeOrganizationService);
         }
+        #endregion
 
         [Fact]
         public void Context_And_Service_Set_In_Constructor()
