@@ -2,7 +2,6 @@
 using FakeItEasy;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.ContextManagement;
-using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Workflow;
 using Xunit;
