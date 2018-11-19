@@ -76,6 +76,7 @@
     <Compile Include="Framework\Interfaces\IImageAttributeVersion.cs" />
     <Compile Include="Framework\Interfaces\IImageManager.cs" />
     <Compile Include="Framework\Interfaces\IRepository.cs" />
+    <Compile Include="Framework\Model\ModelBase.cs" />
     <Compile Include="Framework\Repositories\Repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
