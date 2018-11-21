@@ -7,7 +7,7 @@ namespace MGXRM.Common.Framework.Controller
     public abstract class PluginControllerBase<T> : IPluginEvents where T : Entity
     {
         protected IPluginExecutionContext Context { get; }
-        protected SdkMessageProcessingStep_Mode Synchronous => (SdkMessageProcessingStep_Mode)Context.Mode;
+        protected SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)Context.Mode;
 
         protected PluginControllerBase(IPluginExecutionContext context)
         {
@@ -21,7 +21,7 @@ namespace MGXRM.Common.Framework.Controller
         public void PostCreate()
         {
             
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostCreateSync();
             else
                 PostCreateAsync();
@@ -41,7 +41,7 @@ namespace MGXRM.Common.Framework.Controller
 
         public void PostSetState()
         {
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostSetStateSync();
             else
                 PostSetStateAsync();
@@ -61,7 +61,7 @@ namespace MGXRM.Common.Framework.Controller
 
         public void PostSetStateDynamicEntity()
         {
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostSetStateDynamicEntitySync();
             else
                 PostSetStateDynamicEntityAsync();
@@ -81,7 +81,7 @@ namespace MGXRM.Common.Framework.Controller
 
         public void PostUpdate()
         {
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostUpdateSync();
             else
                 PostUpdateAsync();
@@ -97,7 +97,7 @@ namespace MGXRM.Common.Framework.Controller
 
         public void PostAssign()
         {
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostAssignSync();
             else
                 PostAssignAsync();
@@ -125,7 +125,7 @@ namespace MGXRM.Common.Framework.Controller
 
         public void PostClose()
         {
-            if(Synchronous == SdkMessageProcessingStep_Mode.Synchronous)
+            if(Mode == SdkMessageProcessingStep_Mode.Synchronous)
                 PostCloseSync();
             else
                 PostCloseAsync();
