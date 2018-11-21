@@ -94,7 +94,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         [InlineData("mgxrm_notPresent", false)]
         public void CalledFromParent_Returns_True_If_Hierarchical_Context_Exists_With_Entity(string entityName, bool expectedReturnValue)
         {
-            Assert.Equal(_manager.CalledFromParent(entityName),expectedReturnValue);
+            Assert.Equal(_manager.CalledFromParentEntityContext(entityName),expectedReturnValue);
         }
     }
 }

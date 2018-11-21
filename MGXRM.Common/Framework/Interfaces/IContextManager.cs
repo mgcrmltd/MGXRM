@@ -17,7 +17,7 @@ namespace MGXRM.Common.Framework.Interfaces
         Guid OrganizationId { get; }
         SdkMessageProcessingStep_Stage Stage { get; }
         SdkMessageProcessingStep_Mode Mode { get; }
-        bool CalledFromParent(string entityLogicalName);
+        bool CalledFromParentEntityContext(string entityLogicalName);
         ParameterCollection InputParams { get; }
         ParameterCollection OutputParams { get; }
     }

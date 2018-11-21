@@ -27,16 +27,16 @@ namespace MGXRM.Common.Framework.ContextManagement
 
         public SdkMessageProcessingStep_Stage Stage => SdkMessageProcessingStep_Stage.Postoperation;
         public SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)Context.Mode;
-        public bool CalledFromParent(string entityLogicalName)
+        public bool CalledFromParentEntityContext(string entityLogicalName)
         {
-            return CalledFromParentPluginOfEntityType(entityLogicalName, Context.ParentContext);
+            return CalledFromParentEntityContext(entityLogicalName, Context.ParentContext);
         }
 
-        private static bool CalledFromParentPluginOfEntityType(string entityName, IWorkflowContext context)
+        private static bool CalledFromParentEntityContext(string entityName, IWorkflowContext context)
         {
             if (context == null)
                 return false;
-            return context.PrimaryEntityName == entityName || CalledFromParentPluginOfEntityType(entityName, context.ParentContext);
+            return context.PrimaryEntityName == entityName || CalledFromParentEntityContext(entityName, context.ParentContext);
         }
         public ParameterCollection InputParams => Context.InputParameters;
         public ParameterCollection OutputParams => Context.OutputParameters;

@@ -30,16 +30,16 @@ namespace MGXRM.Common.Framework.ContextManagement
         public Guid OrganizationId => Context.OrganizationId;
         public SdkMessageProcessingStep_Stage Stage => (SdkMessageProcessingStep_Stage)Context.Stage;
         public SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)Context.Mode;
-        public bool CalledFromParent(string entityLogicalName)
+        public bool CalledFromParentEntityContext(string entityLogicalName)
         {
-            return CalledFromParentPluginOfEntityType(entityLogicalName, Context.ParentContext);
+            return CalledFromParentEntityContext(entityLogicalName, Context.ParentContext);
         }
 
-        private static bool CalledFromParentPluginOfEntityType(string entityName, IPluginExecutionContext context)
+        private static bool CalledFromParentEntityContext(string entityName, IPluginExecutionContext context)
         {
             if (context == null)
                 return false;
-            return context.PrimaryEntityName == entityName || CalledFromParentPluginOfEntityType(entityName, context.ParentContext);
+            return context.PrimaryEntityName == entityName || CalledFromParentEntityContext(entityName, context.ParentContext);
         }
 
         public ParameterCollection InputParams => Context.InputParameters;
