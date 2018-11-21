@@ -6,11 +6,12 @@ namespace MGXRM.Common.Framework.Controller
 {
     public abstract class PluginControllerBase<T> : IPluginEvents where T : Entity
     {
-        protected SdkMessageProcessingStep_Mode Synchronous { get; }
+        protected IPluginExecutionContext Context { get; }
+        protected SdkMessageProcessingStep_Mode Synchronous => (SdkMessageProcessingStep_Mode)Context.Mode;
 
-        protected PluginControllerBase(SdkMessageProcessingStep_Mode mode)
+        protected PluginControllerBase(IPluginExecutionContext context)
         {
-            Synchronous = mode;
+            Context = context;
         }
 
         public virtual void PreCreate()
