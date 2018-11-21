@@ -69,6 +69,7 @@
     <Compile Include="EarlyBounds\SdkMessageProcessingStep_Stage.cs" />
     <Compile Include="Framework\ContextManagement\PluginContextManager.cs" />
     <Compile Include="Framework\ContextManagement\WorkflowContextManager.cs" />
+    <Compile Include="Framework\Controller\WorkflowControllerBase.cs" />
     <Compile Include="Framework\ImageManagement\ImageAttributeVersion.cs" />
     <Compile Include="Framework\ImageManagement\ImageManager.cs" />
     <Compile Include="Framework\Extensions\EntityExtensions.cs" />

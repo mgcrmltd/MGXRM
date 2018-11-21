@@ -102,6 +102,7 @@
     <Compile Include="Framework\ContextManagement\PluginContextManagerTest.cs" />
     <Compile Include="Framework\ContextManagement\WorkflowContextManagerTest.cs" />
     <Compile Include="Framework\Controller\PluginControllerBaseTest.cs" />
+    <Compile Include="Framework\Controller\WorkflowControllerBaseTest.cs" />
     <Compile Include="Framework\ImageManagement\ImageAttributeVersionTest.cs" />
     <Compile Include="Framework\ImageManagement\ImageManagerTest.cs" />
     <Compile Include="Framework\Extensions\EntityEntensionsTest.cs" />
