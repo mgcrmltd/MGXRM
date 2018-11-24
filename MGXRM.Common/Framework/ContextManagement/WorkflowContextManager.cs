@@ -8,13 +8,16 @@ namespace MGXRM.Common.Framework.ContextManagement
 {
     public class WorkflowContextManager : IContextManager
     {
+        #region Members and Constructors
         public IWorkflowContext Context { get; }
         public WorkflowContextManager(IWorkflowContext context, IOrganizationService service)
         {
             Context = context;
             Service = service;
         }
+        #endregion
 
+        #region Interface Implementations
         public IOrganizationService Service { get; }
         public Guid UserId => Context.UserId;
         public int Depth => Context.Depth;
@@ -46,5 +49,6 @@ namespace MGXRM.Common.Framework.ContextManagement
                                     && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"] : null;
         public Entity TargetImage => (Context.InputParameters != null
                                       && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as Entity : null;
+        #endregion
     }
 }
