@@ -66,7 +66,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
 
             _manager = new WorkflowContextManager(_fakeWorkflowContext, _fakeOrganizationService);
         }
-        public WorkflowContextManagerTest(bool addImages = true)
+        public WorkflowContextManagerTest()
         {
             FakeContext();
         }
