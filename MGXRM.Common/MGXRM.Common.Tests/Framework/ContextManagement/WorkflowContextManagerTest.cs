@@ -15,7 +15,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         private IOrganizationService _fakeOrganizationService;
         private WorkflowContextManager _manager;
 
-        public WorkflowContextManagerTest()
+        public void FakeContext(bool addImages = true)
         {
             _fakeWorkflowContext = A.Fake<IWorkflowContext>();
             _fakeOrganizationService = A.Fake<IOrganizationService>();
@@ -35,7 +35,25 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             A.CallTo(() => _fakeWorkflowContext.Mode).Returns((int)SdkMessageProcessingStep_Mode.Asynchronous);
             A.CallTo(() => _fakeWorkflowContext.OrganizationName).Returns("Org1");
 
-            A.CallTo(() => _fakeWorkflowContext.InputParameters).Returns(new ParameterCollection());
+            var inputParams = new ParameterCollection();
+            if (addImages)
+            {
+                inputParams.Add("Target", new Entity { Id = Guid.NewGuid() });
+            }
+
+            var preImages = new EntityImageCollection();
+            var postImages = new EntityImageCollection();
+
+            if (addImages)
+            {
+                preImages.Add("PreBusinessEntity", new Entity { Id = Guid.NewGuid() });
+                postImages.Add("PostBusinessEntity", new Entity { Id = Guid.NewGuid() });
+            }
+
+            A.CallTo(() => _fakeWorkflowContext.PreEntityImages).Returns(preImages);
+            A.CallTo(() => _fakeWorkflowContext.PostEntityImages).Returns(postImages);
+
+            A.CallTo(() => _fakeWorkflowContext.InputParameters).Returns(inputParams);
             A.CallTo(() => _fakeWorkflowContext.OutputParameters).Returns(new ParameterCollection());
 
             var fakeParentContext = A.Fake<IWorkflowContext>();
@@ -47,6 +65,10 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             A.CallTo(() => fakeGrandParentContext.ParentContext).Returns(null);
 
             _manager = new WorkflowContextManager(_fakeWorkflowContext, _fakeOrganizationService);
+        }
+        public WorkflowContextManagerTest(bool addImages = true)
+        {
+            FakeContext();
         }
         #endregion
 
@@ -71,12 +93,37 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             Assert.Equal((SdkMessageProcessingStep_Mode)_fakeWorkflowContext.Mode, _manager.Mode);
             Assert.Same(_fakeWorkflowContext.InputParameters, _manager.InputParams);
             Assert.Same(_fakeWorkflowContext.OutputParameters, _manager.OutputParams);
+
+            Assert.Same(_fakeWorkflowContext.PreEntityImages["PreBusinessEntity"], _manager.PreImage);
+            Assert.Same(_fakeWorkflowContext.PostEntityImages["PostBusinessEntity"], _manager.PostImage);
+            Assert.Same(_fakeWorkflowContext.InputParameters["Target"], _manager.TargetImage);
         }
 
         [Fact]
         public void Stage_Returns_Post()
         {
             Assert.Equal(SdkMessageProcessingStep_Stage.Postoperation, _manager.Stage);
+        }
+
+        [Fact]
+        public void Images_Return_Null_If_Not_Present()
+        {
+            FakeContext(false);
+            Assert.Null(_manager.PreImage);
+            Assert.Null(_manager.TargetImage);
+            Assert.Null(_manager.PostImage);
+        }
+
+        [Fact]
+        public void Images_Returns_Null_If_Collection_Not_Present()
+        {
+            FakeContext(false);
+            A.CallTo(() => _fakeWorkflowContext.InputParameters).Returns(null);
+            A.CallTo(() => _fakeWorkflowContext.PreEntityImages).Returns(null);
+            A.CallTo(() => _fakeWorkflowContext.PostEntityImages).Returns(null);
+            Assert.Null(_manager.PreImage);
+            Assert.Null(_manager.TargetImage);
+            Assert.Null(_manager.PostImage);
         }
 
         [Theory]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
@@ -16,6 +17,7 @@ namespace MGXRM.Common.Framework.ContextManagement
             Context = context;
             Service = service;
         }
+
         #endregion
 
         #region Interface Implementations
@@ -44,6 +46,16 @@ namespace MGXRM.Common.Framework.ContextManagement
 
         public ParameterCollection InputParams => Context.InputParameters;
         public ParameterCollection OutputParams => Context.OutputParameters;
+
+        public Entity PreImage => (Context.PreEntityImages != null
+                                   && Context.PreEntityImages.Contains("PreImage")) ? Context.PreEntityImages["PreImage"] : null;
+
+        public Entity TargetImage => (Context.InputParameters != null
+                                   && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as Entity : null;
+
+        public Entity PostImage => (Context.PostEntityImages != null
+                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"] : null;
+
         #endregion
     }
 }

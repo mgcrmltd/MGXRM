@@ -100,8 +100,7 @@ namespace MGXRM.Common.Framework.ImageManagement
 
         public bool IsBeingSetOrUpdated(string attributeName)
         {
-            if (TargetImage == null) return false;
-            return TargetImage.Contains(attributeName);
+            return TargetImage != null && TargetImage.Contains(attributeName);
         }
 
         public bool IsBeingSetAsNull(string attributeName)

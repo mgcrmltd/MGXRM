@@ -16,6 +16,11 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
 
         public PluginContextManagerTest()
         {
+            FakeContext();
+        }
+
+        private void FakeContext(bool addImages = true)
+        {
             _fakeExecutionContext = A.Fake<IPluginExecutionContext>();
             _fakeOrganizationService = A.Fake<IOrganizationService>();
 
@@ -33,10 +38,27 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
 
             A.CallTo(() => _fakeExecutionContext.Stage).Returns((int)SdkMessageProcessingStep_Stage.Postoperation);
             A.CallTo(() => _fakeExecutionContext.Mode).Returns((int)SdkMessageProcessingStep_Mode.Asynchronous);
-            A.CallTo(() => _fakeExecutionContext.OrganizationName).Returns("Org1");
 
-            A.CallTo(() => _fakeExecutionContext.InputParameters).Returns(new ParameterCollection());
+            var inputParams = new ParameterCollection ();
+            if (addImages)
+            {
+                inputParams.Add("Target", new Entity {Id = Guid.NewGuid()});
+            }
+
+            A.CallTo(() => _fakeExecutionContext.InputParameters).Returns(inputParams);
             A.CallTo(() => _fakeExecutionContext.OutputParameters).Returns(new ParameterCollection());
+
+            var preImages = new EntityImageCollection();
+            var postImages = new EntityImageCollection();
+
+            if (addImages)
+            {
+                preImages.Add("PreImage", new Entity { Id = Guid.NewGuid()});
+                postImages.Add("PostImage", new Entity { Id = Guid.NewGuid() });
+            }
+
+            A.CallTo(() => _fakeExecutionContext.PreEntityImages).Returns(preImages);
+            A.CallTo(() => _fakeExecutionContext.PostEntityImages).Returns(postImages);
 
             var fakeParentContext = A.Fake<IPluginExecutionContext>();
             A.CallTo(() => fakeParentContext.PrimaryEntityName).Returns("mgxrm_parent");
@@ -60,32 +82,24 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         [Fact]
         public void Expected_Values_Returned()
         {
+            Assert.Equal(_fakeExecutionContext.MessageName, _manager.Message);
+            Assert.Equal(_fakeExecutionContext.Depth, _manager.Depth);
+            Assert.Equal(_fakeExecutionContext.UserId, _manager.UserId);
+            Assert.Equal(_fakeExecutionContext.PrimaryEntityName, _manager.PrimaryEntityName);
+            Assert.Equal(_fakeExecutionContext.PrimaryEntityId, _manager.PrimaryEntityId);
+            Assert.Equal(_fakeExecutionContext.CorrelationId, _manager.CorrelationId);
+            Assert.Equal(_fakeExecutionContext.OrganizationId, _manager.OrganizationId);
+            Assert.Equal(_fakeExecutionContext.OrganizationName, _manager.OrganizationName);
 
-            /*
-                public bool CalledFromParent(string entityLogicalName)
-                {
-                    return Context != null && (Context.PrimaryEntityName == entityLogicalName || CalledFromParent(entityLogicalName));
-                }
-                public ParameterCollection InputParams => Context.InputParameters;
-                public ParameterCollection OutputParams => Context.InputParameters;
-             */
+            Assert.Equal((SdkMessageProcessingStep_Stage)_fakeExecutionContext.Stage, _manager.Stage);
+            Assert.Equal((SdkMessageProcessingStep_Mode)_fakeExecutionContext.Mode, _manager.Mode);
 
-            var manager = new PluginContextManager(_fakeExecutionContext, _fakeOrganizationService);
-            
-            Assert.Equal(_fakeExecutionContext.MessageName, manager.Message);
-            Assert.Equal(_fakeExecutionContext.Depth, manager.Depth);
-            Assert.Equal(_fakeExecutionContext.UserId, manager.UserId);
-            Assert.Equal(_fakeExecutionContext.PrimaryEntityName, manager.PrimaryEntityName);
-            Assert.Equal(_fakeExecutionContext.PrimaryEntityId, manager.PrimaryEntityId);
-            Assert.Equal(_fakeExecutionContext.CorrelationId, manager.CorrelationId);
-            Assert.Equal(_fakeExecutionContext.OrganizationId, manager.OrganizationId);
-            Assert.Equal(_fakeExecutionContext.OrganizationName, manager.OrganizationName);
+            Assert.Same(_fakeExecutionContext.InputParameters, _manager.InputParams);
+            Assert.Same(_fakeExecutionContext.OutputParameters, _manager.OutputParams);
 
-            Assert.Equal((SdkMessageProcessingStep_Stage)_fakeExecutionContext.Stage, manager.Stage);
-            Assert.Equal((SdkMessageProcessingStep_Mode)_fakeExecutionContext.Mode, manager.Mode);
-
-            Assert.Same(_fakeExecutionContext.InputParameters, manager.InputParams);
-            Assert.Same(_fakeExecutionContext.OutputParameters, manager.OutputParams);
+            Assert.Same(_fakeExecutionContext.PreEntityImages["PreImage"], _manager.PreImage);
+            Assert.Same(_fakeExecutionContext.PostEntityImages["PostImage"], _manager.PostImage);
+            Assert.Same(_fakeExecutionContext.InputParameters["Target"], _manager.TargetImage);
         }
 
         [Theory]
@@ -96,5 +110,29 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         {
             Assert.Equal(_manager.CalledFromParentEntityContext(entityName),expectedReturnValue);
         }
+
+        [Fact]
+        public void Images_Return_Null_If_Not_Present()
+        {
+            FakeContext(false);
+            Assert.Null(_manager.PreImage);
+            Assert.Null(_manager.TargetImage);
+            Assert.Null(_manager.PostImage);
+        }
+
+        [Fact]
+        public void Images_Returns_Null_If_Collection_Not_Present()
+        {
+            FakeContext(false);
+            A.CallTo(() => _fakeExecutionContext.InputParameters).Returns(null);
+            A.CallTo(() => _fakeExecutionContext.PreEntityImages).Returns(null);
+            A.CallTo(() => _fakeExecutionContext.PostEntityImages).Returns(null);
+            Assert.Null(_manager.PreImage);
+            Assert.Null(_manager.TargetImage);
+            Assert.Null(_manager.PostImage);
+        }
+
     }
 }
+
+

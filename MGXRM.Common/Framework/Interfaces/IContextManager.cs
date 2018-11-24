@@ -20,5 +20,8 @@ namespace MGXRM.Common.Framework.Interfaces
         bool CalledFromParentEntityContext(string entityLogicalName);
         ParameterCollection InputParams { get; }
         ParameterCollection OutputParams { get; }
+        Entity PreImage { get; }
+        Entity PostImage { get; }
+        Entity TargetImage { get; }
     }
 }
