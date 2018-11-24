@@ -15,7 +15,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         private IOrganizationService _fakeOrganizationService;
         private WorkflowContextManager _manager;
 
-        public void FakeContext(bool addImages = true)
+        private void FakeContext(bool addImages = true)
         {
             _fakeWorkflowContext = A.Fake<IWorkflowContext>();
             _fakeOrganizationService = A.Fake<IOrganizationService>();
