@@ -4,7 +4,7 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.Interfaces
 {
-    public interface IContextManager
+    public interface IContextManager<T> where T : Entity
     {
         IOrganizationService Service { get; }
         Guid UserId { get; }
@@ -20,8 +20,8 @@ namespace MGXRM.Common.Framework.Interfaces
         bool CalledFromParentEntityContext(string entityLogicalName);
         ParameterCollection InputParams { get; }
         ParameterCollection OutputParams { get; }
-        Entity PreImage { get; }
-        Entity PostImage { get; }
-        Entity TargetImage { get; }
+        T PreImage { get; }
+        T PostImage { get; }
+        T TargetImage { get; }
     }
 }

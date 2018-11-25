@@ -13,7 +13,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         #region Members and Setup
         private IWorkflowContext _fakeWorkflowContext;
         private IOrganizationService _fakeOrganizationService;
-        private WorkflowContextManager _manager;
+        private WorkflowContextManager<Entity> _manager;
 
         private void FakeContext(bool addImages = true)
         {
@@ -64,7 +64,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             A.CallTo(() => fakeParentContext.ParentContext).Returns(fakeGrandParentContext);
             A.CallTo(() => fakeGrandParentContext.ParentContext).Returns(null);
 
-            _manager = new WorkflowContextManager(_fakeWorkflowContext, _fakeOrganizationService);
+            _manager = new WorkflowContextManager<Entity>(_fakeWorkflowContext, _fakeOrganizationService);
         }
         public WorkflowContextManagerTest()
         {

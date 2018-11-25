@@ -12,7 +12,7 @@ namespace MGXRM.Common.Tests.Framework.Model
         public void Context_Images_Repository_Set_In_Constructor()
         {
             var images = A.Fake<IImageManager<TestEntityClass>>();
-            var context = A.Fake<IContextManager>();
+            var context = A.Fake<IContextManager<TestEntityClass>>();
             var repo = A.Fake<IRepository>();
             var model = new TestModelBaseClass(images,context,repo);
             Assert.Same(images, model.GetImageManager());
@@ -24,7 +24,7 @@ namespace MGXRM.Common.Tests.Framework.Model
     #region Test classes
     public class TestModelBaseClass : ModelBase<TestEntityClass>
     {
-        public TestModelBaseClass(IImageManager<TestEntityClass> images, IContextManager context, IRepository repository) :
+        public TestModelBaseClass(IImageManager<TestEntityClass> images, IContextManager<TestEntityClass> context, IRepository repository) :
             base(images, context, repository)
         {
         }
@@ -34,7 +34,7 @@ namespace MGXRM.Common.Tests.Framework.Model
             return Images;
         }
 
-        public IContextManager GetContextManager()
+        public IContextManager<TestEntityClass> GetContextManager()
         {
             return Context;
         }

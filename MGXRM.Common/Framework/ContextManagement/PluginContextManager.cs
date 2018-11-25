@@ -6,7 +6,7 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ContextManagement
 {
-    public class PluginContextManager : IContextManager
+    public class PluginContextManager<T> : IContextManager<T>  where T : Entity
     {
         #region Members and Constructors
         
@@ -47,14 +47,14 @@ namespace MGXRM.Common.Framework.ContextManagement
         public ParameterCollection InputParams => Context.InputParameters;
         public ParameterCollection OutputParams => Context.OutputParameters;
 
-        public Entity PreImage => (Context.PreEntityImages != null
-                                   && Context.PreEntityImages.Contains("PreImage")) ? Context.PreEntityImages["PreImage"] : null;
+        public T PreImage => (Context.PreEntityImages != null
+                                   && Context.PreEntityImages.Contains("PreImage")) ? Context.PreEntityImages["PreImage"] as T : null;
 
-        public Entity TargetImage => (Context.InputParameters != null
-                                   && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as Entity : null;
+        public T TargetImage => (Context.InputParameters != null
+                                   && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as T : null;
 
-        public Entity PostImage => (Context.PostEntityImages != null
-                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"] : null;
+        public T PostImage => (Context.PostEntityImages != null
+                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"] as T: null;
 
         #endregion
     }

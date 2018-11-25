@@ -6,7 +6,7 @@ using Microsoft.Xrm.Sdk.Workflow;
 
 namespace MGXRM.Common.Framework.ContextManagement
 {
-    public class WorkflowContextManager : IContextManager
+    public class WorkflowContextManager<T> : IContextManager<T> where T : Entity
     {
         #region Members and Constructors
         public IWorkflowContext Context { get; }
@@ -43,12 +43,12 @@ namespace MGXRM.Common.Framework.ContextManagement
         }
         public ParameterCollection InputParams => Context.InputParameters;
         public ParameterCollection OutputParams => Context.OutputParameters;
-        public Entity PreImage => (Context.PreEntityImages != null
-                                   && Context.PreEntityImages.Contains("PreBusinessEntity")) ? Context.PreEntityImages["PreBusinessEntity"] : null;
-        public Entity PostImage => (Context.PostEntityImages != null
-                                    && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"] : null;
-        public Entity TargetImage => (Context.InputParameters != null
-                                      && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as Entity : null;
+        public T PreImage => (Context.PreEntityImages != null
+                                   && Context.PreEntityImages.Contains("PreBusinessEntity")) ? Context.PreEntityImages["PreBusinessEntity"] as T : null;
+        public T PostImage => (Context.PostEntityImages != null
+                                    && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"] as T : null;
+        public T TargetImage => (Context.InputParameters != null
+                                      && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as T : null;
         #endregion
     }
 }

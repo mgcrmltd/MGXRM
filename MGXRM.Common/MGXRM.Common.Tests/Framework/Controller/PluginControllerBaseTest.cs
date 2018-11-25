@@ -23,7 +23,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         {
             var context = GetFakeContext(SdkMessageProcessingStep_Mode.Synchronous);
             var controller = new TestControllerBaseClass(context,_fakeService);
-            Assert.Same(context, ((PluginContextManager)controller.BaseContext).Context);
+            Assert.Same(context, ((PluginContextManager<Entity>)controller.BaseContext).Context);
         }
 
         [Theory]
@@ -163,7 +163,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
 
     public class TestControllerBaseClass : PluginControllerBase<Entity>
     {
-        public IContextManager BaseContext => base.ContextManager;
+        public IContextManager<Entity> BaseContext => base.ContextManager;
         public TestControllerBaseClass(IPluginExecutionContext context, IOrganizationService service) : base(context, service)
         {
         }

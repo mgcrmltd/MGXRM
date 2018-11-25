@@ -12,7 +12,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
         #region Members and setup
         private IPluginExecutionContext _fakeExecutionContext;
         private IOrganizationService _fakeOrganizationService;
-        private PluginContextManager _manager;
+        private PluginContextManager<Entity> _manager;
 
         public PluginContextManagerTest()
         {
@@ -68,7 +68,7 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             A.CallTo(() => fakeParentContext.ParentContext).Returns(fakeGrandParentContext);
             A.CallTo(() => fakeGrandParentContext.ParentContext).Returns(null);
 
-            _manager = new PluginContextManager(_fakeExecutionContext, _fakeOrganizationService);
+            _manager = new PluginContextManager<Entity>(_fakeExecutionContext, _fakeOrganizationService);
         }
         #endregion
 
