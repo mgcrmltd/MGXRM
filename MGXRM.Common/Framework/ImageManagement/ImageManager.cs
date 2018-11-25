@@ -9,11 +9,20 @@ namespace MGXRM.Common.Framework.ImageManagement
     public class ImageManager<T> : IImageAttributeVersion, IImageManager<T> where T : Entity
     {
         #region Members and Properties
-        private readonly Entity[] _images;
+        private readonly T[] _images;
         protected IImageAttributeVersion ImageAttributeVersion;
-        public Entity PreImage => GetImage(ImageType.Pre);
-        public Entity PostImage => GetImage(ImageType.Post);
-        public Entity TargetImage => GetImage(ImageType.Target);
+        public T PreImage => GetImage(ImageType.Pre) as T;
+        public T PostImage => GetImage(ImageType.Post) as T;
+        public T TargetImage => GetImage(ImageType.Target) as T;
+        public T CombinedImage
+        {
+            get
+            {
+                var inReverse = _images.Reverse();
+                return inReverse.Aggregate<Entity, Entity>(null, (current, i) => current.ImposeEntity(i)) as T;
+            }
+        }
+
         public Entity CombinedImageEntity {
             get
             {
@@ -26,13 +35,13 @@ namespace MGXRM.Common.Framework.ImageManagement
         #region Constructors
         public ImageManager(Entity preImage, Entity targetImage, Entity postImage)
         {
-            _images = new[] {targetImage, postImage, preImage};
+            _images = new [] {targetImage as T, postImage as T, preImage as T};
             ImageAttributeVersion = new ImageAttributeVersion(_images);
         }
 
         public ImageManager(Entity preImage, Entity targetImage, Entity postImage, IImageAttributeVersion imageAttributeVersion)
         {
-            _images = new[] { targetImage, postImage, preImage };
+            _images = new[] { targetImage as T, postImage as T, preImage as T};
             ImageAttributeVersion = imageAttributeVersion;
         }
         #endregion

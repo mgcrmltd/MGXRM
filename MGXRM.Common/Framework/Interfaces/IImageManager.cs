@@ -17,9 +17,10 @@ namespace MGXRM.Common.Framework.Interfaces
         string GetLatestString(string attributeName);
         Entity GetImage(ImageType type);
 
-        Entity PreImage { get; }
-        Entity PostImage { get; }
-        Entity TargetImage { get; }
+        T PreImage { get; }
+        T PostImage { get; }
+        T TargetImage { get; }
+        T CombinedImage { get; }
 
         bool IsBeingSetOrUpdated(string attributeName);
         bool IsBeingSetAsNull(string attributeName);
