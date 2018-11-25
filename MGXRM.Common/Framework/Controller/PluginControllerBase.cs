@@ -8,23 +8,14 @@ namespace MGXRM.Common.Framework.Controller
 {
     public abstract class PluginControllerBase<T> : IPluginEvents where T : Entity
     {
-        protected IPluginExecutionContext Context { get; }
-        protected IOrganizationService Service { get; }
         protected IContextManager ContextManager;
         protected IImageManager<T> ImageManager;
-        protected SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)Context.Mode;
+        protected SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)ContextManager.Mode;
         
         protected PluginControllerBase(IPluginExecutionContext context, IOrganizationService service)
         {
-            Context = context;
-            Service = service;
-            ContextManager = new PluginContextManager(Context, Service);
+            ContextManager = new PluginContextManager(context, service);
             ImageManager = new ImageManager<T>(ContextManager.PreImage, ContextManager.TargetImage, ContextManager.PostImage);
-        }
-
-        protected PluginControllerBase(IPluginExecutionContext context)
-        {
-            Context = context;
         }
 
         public virtual void PreCreate()

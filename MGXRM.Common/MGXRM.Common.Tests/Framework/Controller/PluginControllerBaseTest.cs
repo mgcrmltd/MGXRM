@@ -4,17 +4,26 @@ using MGXRM.Common.Framework.Controller;
 using Microsoft.Xrm.Sdk;
 using Xunit;
 using FakeItEasy;
+using MGXRM.Common.Framework.ContextManagement;
+using MGXRM.Common.Framework.Interfaces;
 
 namespace MGXRM.Common.Tests.Framework.Controller
 {
     public class PluginControllerBaseTest
     {
+        private IOrganizationService _fakeService;
+
+        public PluginControllerBaseTest()
+        {
+            _fakeService = A.Fake<IOrganizationService>();
+        }
+
         [Fact]
         public void Context_Set_In_Constructor()
         {
             var context = GetFakeContext(SdkMessageProcessingStep_Mode.Synchronous);
-            var controller = new TestControllerBaseClass(context);
-            Assert.Same(context, controller.BaseExecutionContext);
+            var controller = new TestControllerBaseClass(context,_fakeService);
+            Assert.Same(context, ((PluginContextManager)controller.BaseContext).Context);
         }
 
         [Theory]
@@ -23,18 +32,18 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PostCreateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostCreate());
             Assert.Equal(expectedMessage, ex.Message);
         }
 
-       [Theory]
+        [Theory]
         [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PostUpdateSync")]
         [InlineData(SdkMessageProcessingStep_Mode.Asynchronous, "PostUpdateAsync")]
         public void PostUpdateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostUpdate());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -45,7 +54,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PostSetStateDynamicEntityCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostSetStateDynamicEntity());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -56,7 +65,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PostSetStateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostSetState());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -67,7 +76,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PostAssignCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostAssign());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -78,7 +87,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PostCloseCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PostClose());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -88,7 +97,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreCreateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreCreate());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -98,7 +107,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreUpdateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreUpdate());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -108,7 +117,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreSetStateDynamicEntityCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreSetStateDynamicEntity());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -118,7 +127,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreSetStateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreSetState());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -128,7 +137,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreAssignCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreAssign());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -138,7 +147,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
         public void PreCloseCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
         {
             var context = GetFakeContext(mode);
-            var controller = new TestControllerBaseClass(context);
+            var controller = new TestControllerBaseClass(context,_fakeService);
             var ex = Assert.Throws<Exception>(() => controller.PreClose());
             Assert.Equal(expectedMessage, ex.Message);
         }
@@ -154,9 +163,8 @@ namespace MGXRM.Common.Tests.Framework.Controller
 
     public class TestControllerBaseClass : PluginControllerBase<Entity>
     {
-        public IPluginExecutionContext BaseExecutionContext => base.Context;
-        
-        public TestControllerBaseClass(IPluginExecutionContext context) : base(context)
+        public IContextManager BaseContext => base.ContextManager;
+        public TestControllerBaseClass(IPluginExecutionContext context, IOrganizationService service) : base(context, service)
         {
         }
 
