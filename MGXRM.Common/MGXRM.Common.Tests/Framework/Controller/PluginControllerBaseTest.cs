@@ -83,6 +83,67 @@ namespace MGXRM.Common.Tests.Framework.Controller
             Assert.Equal(expectedMessage, ex.Message);
         }
 
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreCreate")]
+        public void PreCreateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreCreate());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreUpdate")]
+        public void PreUpdateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreUpdate());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreSetStateDynamicEntity")]
+        public void PreSetStateDynamicEntityCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreSetStateDynamicEntity());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreSetState")]
+        public void PreSetStateCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreSetState());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreAssign")]
+        public void PreAssignCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreAssign());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+        [Theory]
+        [InlineData(SdkMessageProcessingStep_Mode.Synchronous, "PreClose")]
+        public void PreCloseCallsCorrectSyncMethod(SdkMessageProcessingStep_Mode mode, string expectedMessage)
+        {
+            var context = GetFakeContext(mode);
+            var controller = new TestControllerBaseClass(context);
+            var ex = Assert.Throws<Exception>(() => controller.PreClose());
+            Assert.Equal(expectedMessage, ex.Message);
+        }
+
+
         private IPluginExecutionContext GetFakeContext(SdkMessageProcessingStep_Mode mode)
         {
             var context = A.Fake<IPluginExecutionContext>();
@@ -101,61 +162,109 @@ namespace MGXRM.Common.Tests.Framework.Controller
 
         public override void PostCreateSync()
         {
+            base.PostCreateSync();
             throw new Exception("PostCreateSync");
         }
 
         public override void PostCreateAsync()
         {
+            base.PostCreateAsync();
             throw new Exception("PostCreateAsync");
         }
 
         public override void PostUpdateSync()
         {
+            base.PostUpdateSync();
             throw new Exception("PostUpdateSync");
         }
 
         public override void PostUpdateAsync()
         {
+            base.PostUpdateAsync();
             throw new Exception("PostUpdateAsync");
         }
 
         public override void PostSetStateDynamicEntitySync()
         {
+            base.PostSetStateDynamicEntitySync();
             throw new Exception("PostSetStateDynamicEntitySync");
         }
 
         public override void PostSetStateDynamicEntityAsync()
         {
+            base.PostSetStateDynamicEntityAsync();
             throw new Exception("PostSetStateDynamicEntityAsync");
         }
 
         public override void PostSetStateSync()
         {
+            base.PostSetStateSync();
             throw new Exception("PostSetStateSync");
         }
 
         public override void PostSetStateAsync()
         {
+            base.PostSetStateAsync();
             throw new Exception("PostSetStateAsync");
         }
 
         public override void PostAssignSync()
         {
+            base.PostAssignSync();
             throw new Exception("PostAssignSync");
         }
 
         public override void PostAssignAsync()
         {
+            base.PostAssignAsync();
             throw new Exception("PostAssignAsync");
         }
 
         public override void PostCloseSync()
         {
+            base.PostCloseSync();
             throw new Exception("PostCloseSync");
         }
         public override void PostCloseAsync()
         {
+            base.PostCloseAsync();
             throw new Exception("PostCloseAsync");
+        }
+
+        public override void PreCreate()
+        {
+            base.PreCreate();
+            throw new Exception("PreCreate");
+        }
+
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
+            throw new Exception("PreUpdate");
+        }
+
+        public override void PreSetStateDynamicEntity()
+        {
+            base.PreSetStateDynamicEntity();
+            throw new Exception("PreSetStateDynamicEntity");
+        }
+
+        public override void PreSetState()
+        {
+            base.PreSetState();
+            throw new Exception("PreSetState");
+        }
+
+        public override void PreAssign()
+        {
+            base.PreAssign();
+            throw new Exception("PreAssign");
+        }
+
+        public override void PreClose()
+        {
+            base.PreClose();
+            throw new Exception("PreClose");
         }
     }
 }

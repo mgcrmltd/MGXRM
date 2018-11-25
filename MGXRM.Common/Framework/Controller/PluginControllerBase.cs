@@ -128,10 +128,6 @@ namespace MGXRM.Common.Framework.Controller
         {
         }
 
-        public virtual void RetrieveMultiple()
-        {
-        }
-
         public virtual void PreClose()
         {
         }

@@ -27,8 +27,6 @@
         void PostAssignSync();
         void PostAssignAsync();
 
-        void RetrieveMultiple();
-
         void PreClose();
         void PostClose();
         void PostCloseSync();
