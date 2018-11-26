@@ -151,8 +151,7 @@ namespace MGXRM.Common.Tests.Framework.Controller
             var ex = Assert.Throws<Exception>(() => controller.PreClose());
             Assert.Equal(expectedMessage, ex.Message);
         }
-
-
+        
         private IPluginExecutionContext GetFakeContext(SdkMessageProcessingStep_Mode mode)
         {
             var context = A.Fake<IPluginExecutionContext>();

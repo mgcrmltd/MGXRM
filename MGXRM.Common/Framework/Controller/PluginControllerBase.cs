@@ -1,22 +1,14 @@
 ﻿using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.ContextManagement;
-using MGXRM.Common.Framework.ImageManagement;
 using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.Controller
 {
-    public abstract class PluginControllerBase<T> : IPluginEvents where T : Entity
+    public abstract class PluginControllerBase<T> : ControllerBase<T>, IPluginEvents where T : Entity
     {
-        protected IContextManager<T> ContextManager;
-        protected IImageManager<T> ImageManager;
-        protected SdkMessageProcessingStep_Mode Mode => (SdkMessageProcessingStep_Mode)ContextManager.Mode;
-        
-        protected PluginControllerBase(IPluginExecutionContext context, IOrganizationService service)
-        {
-            ContextManager = new PluginContextManager<T>(context, service);
-            ImageManager = new ImageManager<T>(ContextManager.PreImage, ContextManager.TargetImage, ContextManager.PostImage);
-        }
+        protected PluginControllerBase(IPluginExecutionContext context, IOrganizationService service) 
+            : base(new PluginContextManager<T>(context, service)) {}
 
         public virtual void PreCreate()
         {
