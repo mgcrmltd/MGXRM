@@ -86,6 +86,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Scripts\CreateCommonVariables.ps1" />
+    <None Include="Scripts\InstallXrmTools.ps1" />
+    <None Include="Scripts\TestProjects.ps1" />
+    <None Include="Scripts\VisualStudioProjectFileFunctions.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
