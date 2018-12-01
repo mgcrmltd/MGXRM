@@ -227,19 +227,3 @@ function Test-VsWorkflowProjectSettings
     Test-VsProjectPackage -projectfile $projectfile -packagename "MSBuild.ILMerge.Task" | Out-Null
     Test-MergeAssembliesExcluded $projectfile
 }
-
-<#
-$proj = Get-VsProjectFileInteractive -path "C:\Users\crmadmin\source\repos\MGXRM"
-
-Test-MergeAssembliesExcluded $proj
-
-
-$fname = "C:\Users\crmadmin\source\repos\TestWebApi\ClassLibrary1\ClassLibrary1.csproj"
-Set-VsProjectBuildEvent -filename $fname -namespace "mgxrm" -eventtext "SAMPLE BUILD EVENT" | Out-Null
-#>
-
-#$proj = Get-VsProjectFile -directory "C:\Users\crmadmin\source\repos\TestWebApi\ClassLibrary1"
-#$proj
-#>
-
-
