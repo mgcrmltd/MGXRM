@@ -83,6 +83,36 @@ function Set-VsProjectBuildEvent
     write-host "Project file updated"
 }
 
+function Get-VsProjectBuildEvents
+{     
+    Param
+    (
+    [Parameter(Mandatory=$true, Position=0)]
+    [string] $filename,
+    [Parameter(Mandatory=$true, Position=1)]
+    [string] $namespace,
+    [Parameter(Mandatory=$true, Position=2)]
+    [string] $eventtext,
+    [Parameter(Position=3)]
+    [bool] $preEvent = $true,
+    [Parameter(Position=4)]
+    [string] $vsnamespace = "http://schemas.microsoft.com/developer/msbuild/2003"
+    )
+
+    $event = "PreBuildEvent"
+    if($preEvent -eq $false)
+    {
+        $event = "PostBuildEvent"
+    }
+
+    #Node order creation important so as to avoid empty namepsace strings
+    $doc = Get-XmlDoc -filename $filename
+    $nspacemanager = Get-VsProjectNamespaceManager -xmldoc $doc -namespace $namespace
+    $projectNodes =  Get-VsProjectFileNodeList -xmldoc $doc -namepsacemanager $nspacemanager -namespace $namespace
+    $nodes = $xmlRootNode.SelectNodes("/mgxrm:Project/mgxrm:PropertyGroup/mgxrm:{0}" -f $event,$nspacemanager)
+    return $nodes
+}
+
 function Get-VsProjectFileInteractive
 {   
     Param(
