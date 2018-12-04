@@ -1,16 +1,17 @@
-﻿clear-host
+﻿param (
+    [parameter(position = 0)]
+    [string]$devToolsDirectory = "c:\devtools"
+)
+
 function Get-ScriptDirectory 
 { 
-
     if ($script:MyInvocation.MyCommand.Path) { Split-Path $script:MyInvocation.MyCommand.Path } else { $pwd } 
+}
 
-} 
-$scriptDir =  (split-Path (Get-ScriptDirectory) -Parent)
+$scriptDir =  Get-ScriptDirectory
 set-location $scriptDir 
-  
-$commonVariablesPath = Join-Path $scriptDir "LocalCommonVariables.ps1"
-#Retrieve common settings
-. $commonVariablesPath
+
+$nugetDir = Join-Path $devToolsDirectory "nuget"
 
 new-item -ItemType directory $devToolsDirectory -ErrorAction Ignore
 new-item -ItemType directory $nugetDir -ErrorAction Ignore
@@ -68,9 +69,17 @@ $pdPoshFolder = Get-ChildItem ./Tools | Where-Object {$_.Name -match 'Microsoft.
 move .\Tools\$pdPoshFolder\tools\*.* .\Tools\PackageDeployment.PowerShell
 Remove-Item .\Tools\$pdPoshFolder -Force -Recurse
 
+##
+##Download XRM Tooling PowerShell cmdlets
+##
+nuget install Microsoft.CrmSdk.XrmTooling.CrmConnector.PowerShell -O .\Tools
+md .\Tools\XRMToolingPowerShell
+$cmdletFolder = Get-ChildItem ./Tools | Where-Object {$_.Name -match 'Microsoft.CrmSdk.XrmTooling.CrmConnector.PowerShell.'}
+move .\Tools\$cmdletFolder\tools\*.* .\Tools\XRMToolingPowerShell
+Remove-Item .\Tools\$cmdletFolder -Force -Recurse
+
 ## 
 ##Xrm CI Framework 
 ## 
 Uninstall-Module -Name Xrm.Framework.CI.PowerShell.Cmdlets -ErrorAction Ignore
 Install-Module -Name Xrm.Framework.CI.PowerShell.Cmdlets 
-
