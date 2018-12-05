@@ -3,14 +3,23 @@
     [bool]$interactive = $true
 )
 
+clear-host 
+
 function Get-ScriptDirectory 
 { 
 
     if ($script:MyInvocation.MyCommand.Path) { Split-Path $script:MyInvocation.MyCommand.Path } else { $pwd } 
 
+}
+function Set-ScriptDirectoryLocal
+{ 
+    $sd =  Get-ScriptDirectory
+    set-location $sd
+    return $sd
 } 
 
-clear-host 
+$scriptDir = Set-ScriptDirectoryLocal
+. (join-path $scriptDir CommonSettingsFunctions.ps1)
 
 if($PSVersionTable.Item("PSVersion").Major -lt 5)
 {
@@ -20,9 +29,6 @@ if($PSVersionTable.Item("PSVersion").Major -lt 5)
     Get-WmiObject -Class Win32_OperatingSystem | Format-Table Caption, ServicePackMajorVersion -AutoSize
     exit
 }
-
-$scriptDir =  Get-ScriptDirectory
-set-location $scriptDir 
 
 $sourceControlSettings = Get-Item (join-path $scriptDir "commonsettings.json")
 $localSettingsFile = join-path $scriptDir "localcommonsettings.json"
@@ -38,7 +44,8 @@ if($localSettings -eq $null)
         Get-Content $localSettingsFile | write-host
         return
     }
-    write-host "No local settings found."
+    write-host "No local settings found. Will run the settings wizard."
+    .\SettingsWizard.ps1
 }
 else
 {
@@ -46,28 +53,16 @@ else
     $obj = (Get-content $localSettingsFile | Out-String | ConvertFrom-Json)
     write-host ("Tools director:`t`t{0}" -f $obj.ToolsDirectory)
     write-host ("CRM Instance:`t`t{0}`n" -f $obj.Url)
-}
-
-Write-Host ("1... Run settings wizard")
-Write-Host ("2... Use values from source-controlled commonsettings.json")
-Write-Host ("3... QUIT")
-
-$counter += 1
-$resp = "";
-do
-{
-    try
+    write-host "Checking dev tools installed"
+    if((Test-DevToolsInstalled -directory $obj.ToolsDirectory) -eq $false)
     {
-        [int]$resp = read-host -prompt "Select an option"
-        $GotANumber = $true
-    }
-    catch
-    {
-        $GotANumber = $false
+        .\InstallXrmTools.ps1 -devToolsDirectory $obj.ToolsDirectory 
     }
 }
-until
-    ($gotanumber -and [int]$resp -ge 1 -and [int]$resp -le 3)
+
+$scriptDir = Set-ScriptDirectoryLocal
+
+$resp = (Get-NumericResponseFromMenu "Run settings wizard","Use values from source-controlled commonsettings.json", "Re-install dev tools", "Quit")
 
 Write-Host "`n"
 
@@ -75,10 +70,11 @@ switch ([int]$resp)
 {
     1 {.\SettingsWizard.ps1}
     2 {get-content $sourceControlSettings | set-content $localSettingsFile}
-    3 {exit}
+    3 {.\InstallXrmTools.ps1 $response}
+    4 {exit}
 } 
 
-write-host "Saved local settings:"
+write-host "Current saved local settings:"
 $obj = (Get-content $localSettingsFile | Out-String | ConvertFrom-Json)
 write-host ("Tools directory:`t`t{0}" -f $obj.ToolsDirectory)
 write-host ("CRM Instance:`t`t{0}`n" -f $obj.Url)

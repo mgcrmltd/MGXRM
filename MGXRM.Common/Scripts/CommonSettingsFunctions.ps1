@@ -1,4 +1,4 @@
-﻿function Get-SettingsJson
+﻿function global:Get-SettingsJson
 {
    Param(
         [parameter(position = 0)]
@@ -10,7 +10,7 @@
    return (get-content $jsonfile | out-string | convertfrom-json)
 }
 
-function Get-JsonObjectAttribute
+function global:Get-JsonObjectAttribute
 {
     Param(
         [parameter(position = 0)]
@@ -22,7 +22,7 @@ function Get-JsonObjectAttribute
     return (Get-SettingsJson $jsonfile).$fieldname
 }
 
-function Get-XrmSettingConnectionString
+function global:Get-XrmSettingConnectionString
 {
     Param(
         [parameter(position = 0)]
@@ -32,7 +32,7 @@ function Get-XrmSettingConnectionString
     return Get-JsonObjectAttribute $jsonfile "D365ConnectionString" 
 }
 
-function Get-XrmSettingToolsDirectory
+function global:Get-XrmSettingToolsDirectory
 {
     Param(
         [parameter(position = 0)]
@@ -42,7 +42,7 @@ function Get-XrmSettingToolsDirectory
     return Get-JsonObjectAttribute $jsonfile "ToolsDirectory" 
 }
 
-function Test-DevToolsInstalled
+function global:Test-DevToolsInstalled
 {
     Param(
         [parameter(position = 0)]
@@ -80,7 +80,7 @@ function Test-DevToolsInstalled
     return $true
 }
 
-function Get-XrmSecureOnlineConnectionString{
+function global:Get-XrmSecureOnlineConnectionString{
      <#
     Param(
         [parameter(position = 0)]
@@ -106,8 +106,8 @@ function Get-XrmSecureOnlineConnectionString{
         $toolingDir = $directory
     }
     #>
-    $url = (read-host -Prompt "Enter the online URL (e.g. https://mgxrm.crm4.dynamics.com")
-    $username = (read-host -Prompt "Username (e.g. me@mycompany.com")
+    $url = (read-host -Prompt "Enter the online URL (e.g. https://mgxrm.crm4.dynamics.com)")
+    $username = (read-host -Prompt "Username (e.g. me@mycompany.com)")
     $password = (Read-Host -Prompt "Password" -AsSecureString)
 
     $pw = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($password))))
@@ -117,7 +117,7 @@ function Get-XrmSecureOnlineConnectionString{
     return ($unsecure | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString )
 }
 
-function Get-XrmSecureOnPremiseConnectionString{
+function global:Get-XrmSecureOnPremiseConnectionString{
     Param(
         [parameter(position = 0)]
         [string]$jsonfile = $null,
@@ -141,32 +141,28 @@ function Get-XrmSecureOnPremiseConnectionString{
         $toolingDir = $directory
     }
 
-    $url = (read-host -Prompt "Enter the online URL (e.g. https://mgxrm.crm4.dynamics.com")
-    $username = (read-host -Prompt "Username (e.g. me@mycompany.com")
-    $password = (Read-Host -Prompt "Password" -AsSecureString)
-
-    $pw = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($password))))
-
-    $unsecure = ("Url=" + $url + ";Username=" + $username + ";Password=" + $pw + ";authtype=Office365")
-
-    set-location $toolingDir
-    .\RegisterXrmTooling.ps1 | out-null
-
-    Write-Host "Testing connection"
-
-    $conn = Get-CrmConnection -ConnectionString $unsecure
-
-    if($conn -eq $null)
-    {
-        write-host ("Error. Failed to connect to {0} with details supplied. Run this script again" -f $url)
-        return $null
-    }
+    $url = (read-host -Prompt "`nEnter the on-premise URL including port number and org name (e.g. http://myserver:5555/orgname)")
     
-    write-host ("Connected succesfully")
+    $authType = (Get-NumericResponseFromMenu "Authenticate as logged on user","Specify logon details")
+
+    switch ([int]$authType) 
+    {
+        1 {
+            $unsecure = ("Url=" + $url + ";authtype=AD")
+        }
+        2 {
+            $domain = (read-host -Prompt "Domain")
+            $username = (read-host -Prompt "Username")
+            $password = (Read-Host -Prompt "Password" -AsSecureString)
+            $pw = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($password))))
+            $unsecure = ("Url={0};Domain={1};Username={2};Password={3};authtype=AD" -f $url, $domain, $username, $pw)
+        }
+    }
+
     return ($unsecure | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString )
 }
 
-function Register-XrmTooling{
+function global:Register-XrmTooling{
     Param(
         [parameter(position = 0)]
         [string]$jsonfile = $null,
@@ -201,7 +197,7 @@ function Register-XrmTooling{
     .\RegisterXrmTooling.ps1 | out-null
 }
 
-function Test-CrmSecuredConnectionString{
+function global:Test-CrmSecuredConnectionString{
     Param(
         [parameter(mandatory=$true, position = 0)]
         [string]$secureconnectionstring,
@@ -242,3 +238,43 @@ function Test-CrmSecuredConnectionString{
     return $conn.ConnectedOrgPublishedEndpoints["WebApplication"];
 }
 
+function global:Get-NumericResponseBetween {
+    param(
+    [parameter(mandatory=$true, position=0)]
+    [int]$lowervalue,
+    [parameter(mandatory=$true, position=1)]
+    [int]$uppervalue
+    )
+
+    $resp = "";
+    do
+    {
+        try
+        {
+            [int]$resp = read-host -prompt "Select an option"
+            $GotANumber = $true
+        }
+        catch
+        {
+            $GotANumber = $false
+        }
+    }
+    until
+        ($gotanumber -and [int]$resp -ge $lowervalue -and [int]$resp -le $uppervalue)
+    return $resp
+}
+
+function global:Get-NumericResponseFromMenu{
+    param(
+        [parameter(mandatory=$true, position=0)]
+        [string[]]$optionsarray
+    )
+    [int]$counter = 1
+    foreach($opt in $optionsarray)
+    {
+        write-host ("{0}... {1}" -f $counter, $optionsarray[$counter-1])
+        $counter += 1
+    }
+
+    return Get-NumericResponseBetween 1 $optionsarray.Count
+}

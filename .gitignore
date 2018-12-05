@@ -332,3 +332,4 @@ ASALocalRun/
 
 # Local settings
 LocalCommonVariables.ps1
+LocalCommonSettings.json
