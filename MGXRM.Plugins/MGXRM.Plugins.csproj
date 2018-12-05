@@ -94,14 +94,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
     <PreBuildEvent>powershell.exe $(SolutionDir)MGXRM.Common\Scripts\BuildEventILMergeCheck.ps1 $(ProjectPath)</PreBuildEvent>
   </PropertyGroup>
 </Project>
