@@ -42,6 +42,16 @@ function global:Get-XrmSettingToolsDirectory
     return Get-JsonObjectAttribute $jsonfile "ToolsDirectory" 
 }
 
+function global:Get-XrmSettingSolution
+{
+    Param(
+        [parameter(position = 0)]
+        [string]$jsonfile = $null
+    )
+    
+    return Get-JsonObjectAttribute $jsonfile "Solution" 
+}
+
 function global:Test-DevToolsInstalled
 {
     Param(
@@ -224,8 +234,7 @@ function global:Test-CrmSecuredConnectionString{
 
     Write-Host "Testing connection"
 
-    $sec = ($secureconnectionstring | ConvertTo-SecureString)
-    $unsecure = ([Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($sec)))))
+    $unsecure = Get-UnsecuredString $secureconnectionstring 
     $conn = Get-CrmConnection -ConnectionString $unsecure
 
     if($conn -eq $null)
@@ -236,6 +245,15 @@ function global:Test-CrmSecuredConnectionString{
     
     write-host ("Connected succesfully")
     return $conn.ConnectedOrgPublishedEndpoints["WebApplication"];
+}
+function global:Get-UnsecuredString{
+    Param(
+        [parameter(mandatory=$true, position = 0)]
+        [string]$secureString
+    )
+
+    $sec = ($secureString | ConvertTo-SecureString)
+    return ([Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($sec)))))
 }
 
 function global:Get-NumericResponseBetween {
@@ -277,4 +295,28 @@ function global:Get-NumericResponseFromMenu{
     }
 
     return Get-NumericResponseBetween 1 $optionsarray.Count
+}
+
+function global:Set-XrmSettings{
+    param(
+        [parameter(mandatory=$true, position=0)]
+        [string]$filename,
+        [parameter(mandatory=$true, position=1)]
+        [string]$ToolsDirectory,
+        [parameter(mandatory=$true, position=2)]
+        [string]$D365ConnectionString,
+        [parameter(mandatory=$true, position=3)]
+        [string]$Url,
+        [parameter(mandatory=$true, position=4)]
+        [string]$Solution
+    )
+
+    $obj = New-Object PSObject
+    Add-Member -InputObject $obj -MemberType NoteProperty -Name ToolsDirectory -Value $ToolsDirectory
+    Add-Member -InputObject $obj -MemberType NoteProperty -Name D365ConnectionString -Value $D365ConnectionString
+    Add-Member -InputObject $obj -MemberType NoteProperty -Name Url -Value $Url
+    Add-Member -InputObject $obj -MemberType NoteProperty -Name Solution -Value $Solution
+
+    ConvertTo-Json -InputObject $obj | set-content $filename
+    write-host ("Settings saved to {0}" -f $filename)
 }

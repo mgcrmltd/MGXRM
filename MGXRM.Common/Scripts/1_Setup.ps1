@@ -51,8 +51,9 @@ else
 {
     write-host "Local settings already exist!"
     $obj = (Get-content $localSettingsFile | Out-String | ConvertFrom-Json)
-    write-host ("Tools director:`t`t{0}" -f $obj.ToolsDirectory)
-    write-host ("CRM Instance:`t`t{0}`n" -f $obj.Url)
+    write-host ("Tools directory:`t{0}" -f $obj.ToolsDirectory)
+    write-host ("CRM Instance:`t`t{0}" -f $obj.Url)
+    write-host ("Solution:`t`t`t{0}`n" -f $obj.Solution)
     write-host "Checking dev tools installed"
     if((Test-DevToolsInstalled -directory $obj.ToolsDirectory) -eq $false)
     {
@@ -62,7 +63,7 @@ else
 
 $scriptDir = Set-ScriptDirectoryLocal
 
-$resp = (Get-NumericResponseFromMenu "Run settings wizard","Use values from source-controlled commonsettings.json", "Re-install dev tools", "Quit")
+$resp = (Get-NumericResponseFromMenu "Run settings wizard","Use values from source-controlled commonsettings.json", "Re-install dev tools", "Test VS Projects", "Quit")
 
 Write-Host "`n"
 
@@ -71,10 +72,6 @@ switch ([int]$resp)
     1 {.\SettingsWizard.ps1}
     2 {get-content $sourceControlSettings | set-content $localSettingsFile}
     3 {.\InstallXrmTools.ps1 $response}
-    4 {exit}
-} 
-
-write-host "Current saved local settings:"
-$obj = (Get-content $localSettingsFile | Out-String | ConvertFrom-Json)
-write-host ("Tools directory:`t`t{0}" -f $obj.ToolsDirectory)
-write-host ("CRM Instance:`t`t{0}`n" -f $obj.Url)
+    4 {.\TestProjects.ps1}
+    5 {exit}
+}

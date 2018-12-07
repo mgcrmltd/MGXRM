@@ -67,9 +67,11 @@ if([string]::IsNullOrEmpty($connectUrl))
     return
 }
 
-$obj = New-Object PSObject
-Add-Member -InputObject $obj -MemberType NoteProperty -Name ToolsDirectory -Value $response
-Add-Member -InputObject $obj -MemberType NoteProperty -Name D365ConnectionString -Value $secureString
-Add-Member -InputObject $obj -MemberType NoteProperty -Name Url -Value $connectUrl
+write-host "Pick an organization"
+$unsecure = Get-UnsecuredString $secureString
+$sols = get-xrmentities -ConnectionString $unsecure -EntityName solution -Attribute ismanaged -ConditionOperator Equal -Value $false
+$filteredSols = ($sols | Where-Object -Property UniqueName -NE -Value Active | Where-Object -Property UniqueName -NE -Value Basic).UniqueName
 
-ConvertTo-Json -InputObject $obj | set-content (join-path $scriptDir $profilename)
+$selectedSolution = (Get-NumericResponseFromMenu $filteredSols)
+
+Set-XrmSettings (join-path $scriptDir $profilename) $response $secureString $connectUrl $filteredSols[$selectedSolution-1]
