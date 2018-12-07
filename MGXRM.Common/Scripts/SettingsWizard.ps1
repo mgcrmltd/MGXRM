@@ -1,6 +1,8 @@
 ﻿param (
     [parameter(position = 0)]
-    [string]$jsonfile = $null
+    [string]$jsonfile = $null,
+    [parameter(position = 1)]
+    [string]$profilename = "localcommonsettings.json"
 )
 
 function Get-ScriptDirectory 
@@ -8,11 +10,17 @@ function Get-ScriptDirectory
     if ($script:MyInvocation.MyCommand.Path) { Split-Path $script:MyInvocation.MyCommand.Path } else { $pwd } 
 } 
 
+function Initialize-CommonSettingsFunctions{
+    $alreadyinstalled = get-command Test-NumericResponseFromMenu -ErrorAction Ignore
+    if($alreadyinstalled -ne $null){
+        return
+    }
+    $scriptDir = Get-ScriptDirectory
+    . (join-path $scriptDir CommonSettingsFunctions.ps1)
+}
 
 $scriptDir =  Get-ScriptDirectory
-set-location $scriptDir 
 
-. (join-path $scriptDir CommonSettingsFunctions.ps1)
 
 if([string]::IsNullOrEmpty($jsonfile))
 {
@@ -28,7 +36,7 @@ if([string]::IsNullOrEmpty($response))
     $response = $toolsDir    
 }
 
-new-item -ItemType directory $response -ErrorAction Ignore
+new-item -ItemType directory $response -ErrorAction Ignore | Out-Null
 
 $installed = Test-DevToolsInstalled -directory $response
 
@@ -40,8 +48,18 @@ if($installed -eq $false)
 
 write-host "`n`nTools are installed. Will now connect to CRM and securely save the connection string"
 
+$crmType = (Get-NumericResponseFromMenu "Connect to CRM online","Connect to CRM on-premise", "Enter a full connection string")
 
-$secureString = Get-XrmSecureOnlineConnectionString -directory $response
+$secureString = ""
+switch ([int]$crmType) 
+{
+    1 {$secureString = Get-XrmSecureOnlineConnectionString -directory $response}
+    2 {$secureString = Get-XrmSecureOnPremiseConnectionString -directory $response}
+    3 {$connString = (Read-Host -Prompt "Connection string" -AsSecureString)
+        $secureString = ($connString | ConvertFrom-SecureString)
+    }
+}
+
 $connectUrl = Test-CrmSecuredConnectionString -secureconnectionstring $secureString -directory (join-path $response "Tools\XRMToolingPowerShell")
 if([string]::IsNullOrEmpty($connectUrl))
 {
@@ -54,6 +72,4 @@ Add-Member -InputObject $obj -MemberType NoteProperty -Name ToolsDirectory -Valu
 Add-Member -InputObject $obj -MemberType NoteProperty -Name D365ConnectionString -Value $secureString
 Add-Member -InputObject $obj -MemberType NoteProperty -Name Url -Value $connectUrl
 
-ConvertTo-Json -InputObject $obj | set-content (join-path $scriptDir "localcommonsettings.json")
-
-
+ConvertTo-Json -InputObject $obj | set-content (join-path $scriptDir $profilename)

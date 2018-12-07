@@ -1,4 +1,39 @@
-﻿function Get-VsProjectNamespaceManager
+﻿function global:Test-MergeAssembliesExcluded
+{
+    Param(
+        [Parameter(Mandatory=$true, Position=0)]
+        [System.IO.FileInfo] $projectfile,
+        [parameter(Position=1)]
+        [bool]$throwexception = $false
+    )
+
+    $namespace = "mgxrm"
+    $doc = Get-XmlDoc -filename $projectfile.FullName
+    $nspacemanager = Get-VsProjectNamespaceManager -xmldoc $doc -namespace $namespace
+    [System.Xml.XmlNode]$xmlRootNode = $doc.DocumentElement
+    #xpath is complicated by fact that newly added references have no <Private> element. Once the CopyLocal is changed the element appears. Need to test for both 
+    $nodes = $xmlRootNode.SelectNodes("/mgxrm:Project/mgxrm:ItemGroup/mgxrm:Reference[(count(mgxrm:HintPath)=1 and count(mgxrm:Private)=0) or (count(mgxrm:HintPath)=1 and count(mgxrm:Private)=1 and count(mgxrm:Private)=1 and mgxrm:Private='True')]/@Include",$nspacemanager)
+    if($nodes.Count -gt 0)
+    {
+      $errorTxt = "This project uses ILMerge and referenced assemblies must have their CopyLocal set to false. "
+      $errorTxt += "Update reference settings for:"
+        foreach($_ in $nodes)
+      {
+        $errorTxt += "`n`t- " + ([string]($_.Value)).Substring(0,([string]($_.Value)).IndexOf(","))
+      }
+      if($throwexception -eq $true)
+      {
+        throw $errorTxt
+      }
+      write-host $errorTxt
+    }
+    else
+    {
+        write-host "Ok for ILMerge process"
+    }
+}
+
+function global:Get-VsProjectNamespaceManager
 {
     Param
     (
@@ -15,7 +50,7 @@
     
 }
 
-function Get-VsProjectFileNodeList
+function global:Get-VsProjectFileNodeList
 {     
     [OutputType([System.Xml.XmlNodeList])]
     Param
@@ -33,7 +68,7 @@ function Get-VsProjectFileNodeList
     return [System.Xml.XmlNodeList]$nodes
 }
 
-function Get-XmlDoc
+function global:Get-XmlDoc
 {     
     [OutputType([System.Xml.XmlDocument])]
     Param
@@ -48,14 +83,14 @@ function Get-XmlDoc
 
 }
 
-function Set-VsProjectBuildEvent
+function global:Set-VsProjectBuildEvent
 {     
     Param
     (
     [Parameter(Mandatory=$true, Position=0)]
     [string] $filename,
-    [Parameter(Mandatory=$true, Position=1)]
-    [string] $namespace,
+    [Parameter(Position=1)]
+    [string] $namespace = "mgxrm",
     [Parameter(Mandatory=$true, Position=2)]
     [string] $eventtext,
     [Parameter(Position=3)]
@@ -83,21 +118,24 @@ function Set-VsProjectBuildEvent
     write-host "Project file updated"
 }
 
-function Get-VsProjectBuildEvents
+function global:Test-VsProjectScriptInvokedInBuildEvent
 {     
     Param
     (
     [Parameter(Mandatory=$true, Position=0)]
     [string] $filename,
     [Parameter(Mandatory=$true, Position=1)]
-    [string] $namespace,
-    [Parameter(Mandatory=$true, Position=2)]
-    [string] $eventtext,
-    [Parameter(Position=3)]
+    [string] $scriptname,
+    [Parameter(Position=2)]
     [bool] $preEvent = $true,
-    [Parameter(Position=4)]
-    [string] $vsnamespace = "http://schemas.microsoft.com/developer/msbuild/2003"
+    [Parameter(Position=3)]
+    [bool] $interactive = $true
     )
+
+    if($scriptname.EndsWith(".ps1"))
+    {
+        $scriptname = $scriptname.Replace(".ps1","")
+    }
 
     $event = "PreBuildEvent"
     if($preEvent -eq $false)
@@ -105,15 +143,32 @@ function Get-VsProjectBuildEvents
         $event = "PostBuildEvent"
     }
 
-    #Node order creation important so as to avoid empty namepsace strings
-    $doc = Get-XmlDoc -filename $filename
-    $nspacemanager = Get-VsProjectNamespaceManager -xmldoc $doc -namespace $namespace
-    $projectNodes =  Get-VsProjectFileNodeList -xmldoc $doc -namepsacemanager $nspacemanager -namespace $namespace
-    $nodes = $xmlRootNode.SelectNodes("/mgxrm:Project/mgxrm:PropertyGroup/mgxrm:{0}" -f $event,$nspacemanager)
-    return $nodes
+    $regexText = ("<{0}>.*powershell\.exe.*\$\(SolutionDir\).*\\{1}\.ps1.*\$\(ProjectPath\).*<\/{2}>" -f $event, $scriptname, $event)
+    
+    $mtchs = (get-item $filename | Select-String -Pattern $regexText)
+
+    if($mtchs -ne $null -and $mtchs.Matches.Count -gt 0){
+        return $true
+    }
+    else{
+        if($interactive -eq $true)
+        {
+            write-host ("No build event found invoking script {0}. Add event?" -f $scriptname)
+            Initialize-CommonSettingsFunctions
+            $addEvent = (Get-NumericResponseFromMenu "Yes","No")
+            switch ([int]$addEvent) 
+            {
+                1 {Set-VsProjectBuildEvent -filename $filename -eventtext ("powershell.exe $`(SolutionDir)MGXRM.Common\Scripts\{0}.ps1 $`(ProjectPath)" -f $scriptname)}
+                2 {}
+            }
+        }
+        return $false
+    }
+
+
 }
 
-function Get-VsProjectFileInteractive
+function global:Get-VsProjectFileInteractive
 {   
     Param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -172,7 +227,7 @@ function Get-VsProjectFileInteractive
     return [System.IO.FileInfo]$projects[$resp-1]
 }
 
-function Test-VsProjectPackage
+function global:Test-VsProjectPackage
 {
     Param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -203,37 +258,7 @@ function Test-VsProjectPackage
     return $true
 }
 
-function Test-MergeAssembliesExcluded
-{
-    Param(
-        [Parameter(Mandatory=$true, Position=0)]
-        [System.IO.FileInfo] $projectfile
-    )
-
-    $namespace = "mgxrm"
-    $doc = Get-XmlDoc -filename $projectfile.FullName
-    $nspacemanager = Get-VsProjectNamespaceManager -xmldoc $doc -namespace $namespace
-    [System.Xml.XmlNode]$xmlRootNode = $doc.DocumentElement
-    $nodes = $xmlRootNode.SelectNodes("/mgxrm:Project/mgxrm:ItemGroup/mgxrm:Reference[mgxrm:Private='True']/@Include",$nspacemanager)
-
-    if($nodes.Count -gt 0)
-    {
-      $errorTxt = "This project uses ILMerge and referenced assemblies must have their CopyLocal set to false. "
-      $errorTxt += "Update reference settings for:"
-        foreach($_ in $nodes)
-      {
-        $errorTxt += "`n`t- " + ([string]($_.Value)).Substring(0,([string]($_.Value)).IndexOf(","))
-      }
-      write-host $errorTxt
-    }
-    else
-    {
-        write-host "No referenced assemblies to interfere with ILMerge process"
-    }
-
-}
-
-function Test-VsPluginProjectSettings
+function global:Test-VsPluginProjectSettings
 {
     Param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -243,9 +268,10 @@ function Test-VsPluginProjectSettings
     Test-VsProjectPackage -projectfile $projectfile -packagename "Microsoft.CrmSdk.CoreAssemblies" | Out-Null
     Test-VsProjectPackage -projectfile $projectfile -packagename "MSBuild.ILMerge.Task" | Out-Null
     Test-MergeAssembliesExcluded $projectfile
+    Test-VsProjectScriptInvokedInBuildEvent -filename $projectfile -scriptname BuildEventILMergeCheck.ps1 | out-null
 }
 
-function Test-VsWorkflowProjectSettings
+function global:Test-VsWorkflowProjectSettings
 {
     Param(
         [Parameter(Mandatory=$true, Position=0)]
@@ -256,4 +282,19 @@ function Test-VsWorkflowProjectSettings
     Test-VsProjectPackage -projectfile $projectfile -packagename "Microsoft.CrmSdk.Workflow" | Out-Null
     Test-VsProjectPackage -projectfile $projectfile -packagename "MSBuild.ILMerge.Task" | Out-Null
     Test-MergeAssembliesExcluded $projectfile
+    Test-VsProjectScriptInvokedInBuildEvent -filename $projectfile -scriptname BuildEventILMergeCheck.ps1 | out-null
+}
+
+function global:Get-ScriptDirectory 
+{ 
+    if ($script:MyInvocation.MyCommand.Path) { Split-Path $script:MyInvocation.MyCommand.Path } else { $pwd } 
+}
+
+function Initialize-CommonSettingsFunctions{
+    $alreadyinstalled = get-command Test-NumericResponseFromMenu -ErrorAction Ignore
+    if($alreadyinstalled -ne $null){
+        return
+    }
+    $scriptDir = Get-ScriptDirectory
+    . (join-path $scriptDir CommonSettingsFunctions.ps1)
 }
