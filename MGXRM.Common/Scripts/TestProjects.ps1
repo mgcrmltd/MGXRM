@@ -17,6 +17,8 @@ function Initialize-CommonSettingsFunctions{
     . (join-path $scriptDir CommonSettingsFunctions.ps1)
 }
 
+Initialize-CommonSettingsFunctions
+
 $scriptDir =  Get-ScriptDirectory
 set-location $scriptDir 
 
