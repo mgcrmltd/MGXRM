@@ -67,7 +67,7 @@ if([string]::IsNullOrEmpty($connectUrl))
     return
 }
 
-write-host "Pick an organization"
+write-host "Pick an solution to be used for deployment"
 $unsecure = Get-UnsecuredString $secureString
 $sols = get-xrmentities -ConnectionString $unsecure -EntityName solution -Attribute ismanaged -ConditionOperator Equal -Value $false
 $filteredSols = ($sols | Where-Object -Property UniqueName -NE -Value Active | Where-Object -Property UniqueName -NE -Value Basic).UniqueName

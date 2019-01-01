@@ -71,7 +71,7 @@ switch ([int]$resp)
 {
     1 {.\SettingsWizard.ps1}
     2 {get-content $sourceControlSettings | set-content $localSettingsFile}
-    3 {.\InstallXrmTools.ps1 $response}
+    3 {.\InstallXrmTools.ps1 (Get-XrmSettingToolsDirectory $localSettingsFile)}
     4 {.\TestProjects.ps1}
     5 {exit}
 }
