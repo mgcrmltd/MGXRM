@@ -124,10 +124,10 @@ namespace MGXRM.Common.Framework.ImageManagement
             TargetImage[attributeName] = value;
         }
 
-        public void RemoveSetOrUpdateValue(string attributeName)
+        public bool RemoveSetOrUpdateValue(string attributeName)
         {
             if (TargetImage == null) throw new InvalidPluginExecutionException("No target image to remove value from");
-            TargetImage.RemoveAttribute(attributeName);
+            return TargetImage.RemoveAttribute(attributeName);
         }
 
         #endregion

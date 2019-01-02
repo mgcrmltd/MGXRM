@@ -25,6 +25,6 @@ namespace MGXRM.Common.Framework.Interfaces
         bool IsBeingSetOrUpdated(string attributeName);
         bool IsBeingSetAsNull(string attributeName);
         void SetOrUpdate(string attributeName, object value);
-        void RemoveSetOrUpdateValue(string attributeName);
+        bool RemoveSetOrUpdateValue(string attributeName);
     }
 }
