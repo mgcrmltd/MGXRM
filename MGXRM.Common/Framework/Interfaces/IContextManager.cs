@@ -7,6 +7,7 @@ namespace MGXRM.Common.Framework.Interfaces
     public interface IContextManager<T> where T : Entity
     {
         IOrganizationService Service { get; }
+        IServiceProvider ServiceProvider { get; }
         Guid UserId { get; }
         int Depth { get; }
         string Message { get; }

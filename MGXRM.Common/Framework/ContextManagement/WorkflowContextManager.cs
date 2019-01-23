@@ -19,6 +19,7 @@ namespace MGXRM.Common.Framework.ContextManagement
 
         #region Interface Implementations
         public IOrganizationService Service { get; }
+        public IServiceProvider ServiceProvider => throw new InvalidPluginExecutionException("No service provider on Workflows");
         public Guid UserId => Context.UserId;
         public int Depth => Context.Depth;
         public string Message => Context.MessageName;

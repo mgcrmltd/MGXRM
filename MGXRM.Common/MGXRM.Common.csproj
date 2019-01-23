@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="EarlyBounds\SdkMessageProcessingStep_Mode.cs" />
     <Compile Include="EarlyBounds\SdkMessageProcessingStep_Stage.cs" />
+    <Compile Include="Framework\AzureQueueLogger\IQueueLogger.cs" />
+    <Compile Include="Framework\AzureQueueLogger\QueueLogger.cs" />
     <Compile Include="Framework\ContextManagement\PluginContextManager.cs" />
     <Compile Include="Framework\ContextManagement\WorkflowContextManager.cs" />
     <Compile Include="Framework\Controller\ControllerBase.cs" />
@@ -91,5 +93,6 @@
     <None Include="Scripts\TestProjects.ps1" />
     <None Include="Scripts\VisualStudioProjectFileFunctions.ps1" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

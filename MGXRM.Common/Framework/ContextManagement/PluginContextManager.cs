@@ -1,21 +1,39 @@
 ﻿using System;
-using System.Threading;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.Interfaces;
 using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ContextManagement
 {
-    public class PluginContextManager<T> : IContextManager<T>  where T : Entity
+    public class PluginContextManager<T> : IContextManager<T> where T : Entity
     {
         #region Members and Constructors
-        
+
         public IPluginExecutionContext Context { get; }
+        public IServiceProvider ServiceProvider { get; }
 
         public PluginContextManager(IPluginExecutionContext context, IOrganizationService service)
         {
+            ServiceProvider = null;
             Context = context;
             Service = service;
+        }
+
+        public PluginContextManager(IServiceProvider serviceProvider, IOrganizationService service)
+        {
+            ServiceProvider = serviceProvider;
+            Context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+            Service = service;
+        }
+
+        public PluginContextManager(IServiceProvider serviceProvider)
+        {
+            ServiceProvider = serviceProvider;
+            Context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+            var factory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+
+            // Use the factory to generate the Organization Service.
+            Service = factory.CreateOrganizationService(Context.UserId);
         }
 
         #endregion
@@ -54,7 +72,7 @@ namespace MGXRM.Common.Framework.ContextManagement
                                    && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as T : null;
 
         public T PostImage => (Context.PostEntityImages != null
-                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"] as T: null;
+                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"] as T : null;
 
         #endregion
     }
