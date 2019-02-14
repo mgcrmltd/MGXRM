@@ -5,11 +5,16 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Plugins", "MGXRM.Plugins\MGXRM.Plugins.csproj", "{BDE3068B-158D-4225-828B-5DE6EABCD1F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common", "MGXRM.Common\MGXRM.Common.csproj", "{B9CE647A-E3AF-4AC1-ACD8-A7DFD4F9F0B3}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MGXRM.Common", "MGXRM.Common\MGXRM.Common.shproj", "{0F281FC4-8F06-4C28-AFCD-E491CA4F2EF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common.Tests", "MGXRM.Common\MGXRM.Common.Tests\MGXRM.Common.Tests.csproj", "{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common.Tests", "MGXRM.Common.Tests\MGXRM.Common.Tests.csproj", "{CC37EC7F-2F82-4195-BECB-6467DC631BF4}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MGXRM.Common\MGXRM.Common.projitems*{0f281fc4-8f06-4c28-afcd-e491ca4f2ef5}*SharedItemsImports = 13
+		MGXRM.Common\MGXRM.Common.projitems*{bde3068b-158d-4225-828b-5de6eabcd1f4}*SharedItemsImports = 4
+		MGXRM.Common\MGXRM.Common.projitems*{cc37ec7f-2f82-4195-becb-6467dc631bf4}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -19,14 +24,10 @@ Global
 		{BDE3068B-158D-4225-828B-5DE6EABCD1F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE3068B-158D-4225-828B-5DE6EABCD1F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE3068B-158D-4225-828B-5DE6EABCD1F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9CE647A-E3AF-4AC1-ACD8-A7DFD4F9F0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9CE647A-E3AF-4AC1-ACD8-A7DFD4F9F0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9CE647A-E3AF-4AC1-ACD8-A7DFD4F9F0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9CE647A-E3AF-4AC1-ACD8-A7DFD4F9F0B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FCDEBEA5-05D8-45E5-A271-CDCDC90B56B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
