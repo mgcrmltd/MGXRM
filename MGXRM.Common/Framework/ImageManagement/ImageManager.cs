@@ -11,8 +11,8 @@ namespace MGXRM.Common.Framework.ImageManagement
         #region Members and Properties
         private readonly T[] _images;
         protected IImageAttributeVersion ImageAttributeVersion;
-        public T PreImage => GetImage(ImageType.Pre)?.ToEntity<T>();;
-        public T PostImage => GetImage(ImageType.Post)?.ToEntity<T>();;
+        public T PreImage => GetImage(ImageType.Pre)?.ToEntity<T>();
+        public T PostImage => GetImage(ImageType.Post)?.ToEntity<T>();
         public T TargetImage => GetImage(ImageType.Target)?.ToEntity<T>();
         public T CombinedImage
         {
