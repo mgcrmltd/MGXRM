@@ -11,15 +11,15 @@ namespace MGXRM.Common.Framework.ImageManagement
         #region Members and Properties
         private readonly T[] _images;
         protected IImageAttributeVersion ImageAttributeVersion;
-        public T PreImage => GetImage(ImageType.Pre) as T;
-        public T PostImage => GetImage(ImageType.Post) as T;
-        public T TargetImage => GetImage(ImageType.Target) as T;
+        public T PreImage => GetImage(ImageType.Pre)?.ToEntity<T>();;
+        public T PostImage => GetImage(ImageType.Post)?.ToEntity<T>();;
+        public T TargetImage => GetImage(ImageType.Target)?.ToEntity<T>();
         public T CombinedImage
         {
             get
             {
                 var inReverse = _images.Reverse();
-                return inReverse.Aggregate<Entity, Entity>(null, (current, i) => current.ImposeEntity(i)) as T;
+                return inReverse.Aggregate<Entity, Entity>(null, (current, i) => current.ImposeEntity(i))?.ToEntity<T>();
             }
         }
 
