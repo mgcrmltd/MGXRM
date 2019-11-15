@@ -238,7 +238,7 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             var targetImage = new Entity("TARGET");
 
             var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
-            Assert.Equal(imageManager.PreImage, preImage);
+            Assert.Equal(imageManager.PreImage.LogicalName, preImage.LogicalName);
         }
 
         [Fact]
@@ -249,7 +249,7 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             var targetImage = new Entity("TARGET");
 
             var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
-            Assert.Equal(imageManager.PostImage, postImage);
+            Assert.Equal(imageManager.PostImage.LogicalName, postImage.LogicalName);
         }
 
         [Fact]
@@ -260,7 +260,7 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             var targetImage = new Entity("TARGET");
 
             var imageManager = new ImageManager<Entity>(preImage, targetImage, postImage);
-            Assert.Equal(imageManager.TargetImage, targetImage);
+            Assert.Equal(imageManager.TargetImage.LogicalName, targetImage.LogicalName);
         }
         #endregion
 

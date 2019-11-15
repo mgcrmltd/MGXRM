@@ -9,7 +9,7 @@ namespace MGXRM.Common.Framework.ImageManagement
     public class ImageManager<T> : IImageAttributeVersion, IImageManager<T> where T : Entity
     {
         #region Members and Properties
-        private readonly T[] _images;
+        private readonly Entity[] _images;
         protected IImageAttributeVersion ImageAttributeVersion;
         public T PreImage => GetImage(ImageType.Pre)?.ToEntity<T>();
         public T PostImage => GetImage(ImageType.Post)?.ToEntity<T>();
@@ -35,13 +35,13 @@ namespace MGXRM.Common.Framework.ImageManagement
         #region Constructors
         public ImageManager(Entity preImage, Entity targetImage, Entity postImage)
         {
-            _images = new [] {targetImage as T, postImage as T, preImage as T};
+            _images = new [] {targetImage, postImage, preImage};
             ImageAttributeVersion = new ImageAttributeVersion(_images);
         }
 
         public ImageManager(Entity preImage, Entity targetImage, Entity postImage, IImageAttributeVersion imageAttributeVersion)
         {
-            _images = new[] { targetImage as T, postImage as T, preImage as T};
+            _images = new[] { targetImage, postImage, preImage};
             ImageAttributeVersion = imageAttributeVersion;
         }
         #endregion

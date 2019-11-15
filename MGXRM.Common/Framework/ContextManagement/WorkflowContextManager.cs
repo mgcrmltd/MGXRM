@@ -45,11 +45,11 @@ namespace MGXRM.Common.Framework.ContextManagement
         public ParameterCollection InputParams => Context.InputParameters;
         public ParameterCollection OutputParams => Context.OutputParameters;
         public T PreImage => (Context.PreEntityImages != null
-                                   && Context.PreEntityImages.Contains("PreBusinessEntity")) ? Context.PreEntityImages["PreBusinessEntity"] as T : null;
+                                   && Context.PreEntityImages.Contains("PreBusinessEntity")) ? Context.PreEntityImages["PreBusinessEntity"].ToEntity<T>() : null;
         public T PostImage => (Context.PostEntityImages != null
-                                    && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"] as T : null;
+                                    && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"].ToEntity<T>() : null;
         public T TargetImage => (Context.InputParameters != null
-                                      && Context.InputParameters.Contains("Target")) ? Context.InputParameters["Target"] as T : null;
+                                      && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity).ToEntity<T>() : null;
         #endregion
     }
 }

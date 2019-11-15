@@ -94,9 +94,9 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             Assert.Same(_fakeWorkflowContext.InputParameters, _manager.InputParams);
             Assert.Same(_fakeWorkflowContext.OutputParameters, _manager.OutputParams);
 
-            Assert.Same(_fakeWorkflowContext.PreEntityImages["PreBusinessEntity"], _manager.PreImage);
-            Assert.Same(_fakeWorkflowContext.PostEntityImages["PostBusinessEntity"], _manager.PostImage);
-            Assert.Same(_fakeWorkflowContext.InputParameters["Target"], _manager.TargetImage);
+            Assert.Equal(_fakeWorkflowContext.PreEntityImages["PreBusinessEntity"].Id, _manager.PreImage.Id);
+            Assert.Equal(_fakeWorkflowContext.PostEntityImages["PostBusinessEntity"].Id, _manager.PostImage.Id);
+            Assert.Equal((_fakeWorkflowContext.InputParameters["Target"] as Entity).Id, _manager.TargetImage.Id);
         }
 
         [Fact]

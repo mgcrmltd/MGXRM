@@ -97,9 +97,9 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             Assert.Same(_fakeExecutionContext.InputParameters, _manager.InputParams);
             Assert.Same(_fakeExecutionContext.OutputParameters, _manager.OutputParams);
 
-            Assert.Same(_fakeExecutionContext.PreEntityImages["PreImage"], _manager.PreImage);
-            Assert.Same(_fakeExecutionContext.PostEntityImages["PostImage"], _manager.PostImage);
-            Assert.Same(_fakeExecutionContext.InputParameters["Target"], _manager.TargetImage);
+            Assert.Equal(_fakeExecutionContext.PreEntityImages["PreImage"].Id, _manager.PreImage.Id);
+            Assert.Equal(_fakeExecutionContext.PostEntityImages["PostImage"].Id, _manager.PostImage.Id);
+            Assert.Equal((_fakeExecutionContext.InputParameters["Target"] as Entity).Id, _manager.TargetImage.Id);
         }
 
         [Theory]
