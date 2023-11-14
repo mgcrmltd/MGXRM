@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xrm.Sdk;
 
-namespace Ceox.Common.Framework.AzureEndpointLogger
+namespace MGXRM.Common.Framework.AzureEndpointLogger
 {
     public class QueueLogger : IQueueLogger
     {
