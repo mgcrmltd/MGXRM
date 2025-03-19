@@ -165,5 +165,13 @@ namespace MGXRM.Common.Framework.Extensions
                 return ((string)entity[attributeName]);
             return null;
         }
+        
+        public static Guid? GetGuid(this Entity entity, string attributeName)
+        {
+            var obj = entity[attributeName];
+            if (obj != null)
+                return ((Guid)entity[attributeName]);
+            return null;
+        }
     }
 }

@@ -108,6 +108,7 @@
     <Compile Include="Framework\ImageManagement\ImageAttributeVersionTest.cs" />
     <Compile Include="Framework\ImageManagement\ImageManagerTest.cs" />
     <Compile Include="Framework\Model\ModelBaseTest.cs" />
+    <Compile Include="Framework\Repositories\RepositoryDecoratorTests.cs" />
     <Compile Include="Framework\Repositories\RepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

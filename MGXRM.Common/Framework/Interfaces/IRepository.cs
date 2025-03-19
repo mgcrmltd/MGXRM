@@ -20,5 +20,7 @@ namespace MGXRM.Common.Framework.Interfaces
         List<Entity> RetrieveByAttributes(string entityName, string[] attributes, object[] attributeValues, ColumnSet columns);
         void ChangeStatus(Entity target, int statecode, int statuscode);
         void AssignRecord(EntityReference entity, EntityReference assignee);
+        
+        List<Entity> FetchAll(string fetchXml);
     }
 }

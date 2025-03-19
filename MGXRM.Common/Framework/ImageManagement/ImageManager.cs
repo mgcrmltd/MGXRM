@@ -102,6 +102,11 @@ namespace MGXRM.Common.Framework.ImageManagement
             return GetLatestImage(attributeName)?.GetString(attributeName);
         }
 
+        public Guid? GetLatestGuid(string attributeName)
+        {
+            return GetLatestImage(attributeName)?.GetGuid(attributeName);
+        }
+
         public Entity GetImage(ImageType type)
         {
             return _images.ElementAtOrDefault((int) type);
@@ -129,6 +134,8 @@ namespace MGXRM.Common.Framework.ImageManagement
             if (TargetImage == null) throw new InvalidPluginExecutionException("No target image to remove value from");
             return TargetImage.RemoveAttribute(attributeName);
         }
+        
+        
 
         #endregion
     }
