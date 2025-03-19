@@ -24,6 +24,7 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
             FullEntity["money"] = new Money((decimal)10.5);
             FullEntity["string"] = "Hello World";
             FullEntity["optionSetValue"] = new OptionSetValue(1);
+            FullEntity["guid"] = Guid.NewGuid();
         }
         #endregion
 
@@ -160,6 +161,27 @@ namespace MGXRM.Common.Tests.Framework.ImageManagement
 
             A.CallTo(() => entityAttributeVersionFake.GetLatestImage("string")).MustHaveHappened();
             Assert.IsType<string>(val);
+        }
+        
+        [Fact]
+        public void GetLatestGuid_Calls_IEntityAttributeVersion_GetLatestImage_And_Casts()
+        {
+            var entityAttributeVersionFake = A.Fake<IImageAttributeVersion>();
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage(A<string>._)).Returns(FullEntity);
+
+            var em = new ImageManager<Entity>(FullEntity, null, null, entityAttributeVersionFake);
+            var val = em.GetLatestGuid("guid");
+
+            A.CallTo(() => entityAttributeVersionFake.GetLatestImage("guid")).MustHaveHappened();
+            Assert.IsType<Guid>(val);
+        }
+        
+        [Fact]
+        public void GetLatestGuid_Can_Return_Null()
+        {
+            var em = new ImageManager<Entity>(null, null, null);
+            var val = em.GetLatestGuid(FieldName);
+            Assert.Null(val);
         }
         #endregion
 

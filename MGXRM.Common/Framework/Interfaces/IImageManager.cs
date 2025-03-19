@@ -15,6 +15,8 @@ namespace MGXRM.Common.Framework.Interfaces
         DateTime? GetLatestDate(string attributeName);
         bool? GetLatestBool(string attributeName);
         string GetLatestString(string attributeName);
+        Guid? GetLatestGuid(string attributeName);
+        
         Entity GetImage(ImageType type);
 
         T PreImage { get; }

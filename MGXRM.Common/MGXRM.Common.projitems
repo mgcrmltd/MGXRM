@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\Repository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\RepositoryDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Scripts\1_Setup.ps1" />
