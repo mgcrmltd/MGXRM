@@ -79,6 +79,10 @@
     <None Include="MyKey.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers" />
+    <Folder Include="PluginExecution" />
+  </ItemGroup>
   <Import Project="..\MGXRM.Common\MGXRM.Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
