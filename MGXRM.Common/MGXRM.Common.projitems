@@ -9,6 +9,7 @@
     <Import_RootNamespace>MGXRM.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\Contact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Mode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Stage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\AzureQueueLogger\IQueueLogger.cs" />
