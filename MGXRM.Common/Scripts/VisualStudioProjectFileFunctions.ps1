@@ -1,39 +1,4 @@
-﻿function global:Test-MergeAssembliesExcluded
-{
-    Param(
-        [Parameter(Mandatory=$true, Position=0)]
-        [System.IO.FileInfo] $projectfile,
-        [parameter(Position=1)]
-        [bool]$throwexception = $false
-    )
-
-    $namespace = "mgxrm"
-    $doc = Get-XmlDoc -filename $projectfile.FullName
-    $nspacemanager = Get-VsProjectNamespaceManager -xmldoc $doc -namespace $namespace
-    [System.Xml.XmlNode]$xmlRootNode = $doc.DocumentElement
-    #xpath is complicated by fact that newly added references have no <Private> element. Once the CopyLocal is changed the element appears. Need to test for both 
-    $nodes = $xmlRootNode.SelectNodes("/mgxrm:Project/mgxrm:ItemGroup/mgxrm:Reference[(count(mgxrm:HintPath)=1 and count(mgxrm:Private)=0) or (count(mgxrm:HintPath)=1 and count(mgxrm:Private)=1 and count(mgxrm:Private)=1 and mgxrm:Private='True')]/@Include",$nspacemanager)
-    if($nodes.Count -gt 0)
-    {
-      $errorTxt = "This project uses ILMerge and referenced assemblies must have their CopyLocal set to false. "
-      $errorTxt += "Update reference settings for:"
-        foreach($_ in $nodes)
-      {
-        $errorTxt += "`n`t- " + ([string]($_.Value)).Substring(0,([string]($_.Value)).IndexOf(","))
-      }
-      if($throwexception -eq $true)
-      {
-        throw $errorTxt
-      }
-      write-host $errorTxt
-    }
-    else
-    {
-        write-host "Ok for ILMerge process"
-    }
-}
-
-function global:Get-VsProjectNamespaceManager
+﻿function global:Get-VsProjectNamespaceManager
 {
     Param
     (
@@ -266,9 +231,6 @@ function global:Test-VsPluginProjectSettings
     )
 
     Test-VsProjectPackage -projectfile $projectfile -packagename "Microsoft.CrmSdk.CoreAssemblies" | Out-Null
-    Test-VsProjectPackage -projectfile $projectfile -packagename "MSBuild.ILMerge.Task" | Out-Null
-    Test-MergeAssembliesExcluded $projectfile
-    Test-VsProjectScriptInvokedInBuildEvent -filename $projectfile -scriptname BuildEventILMergeCheck.ps1 | out-null
 }
 
 function global:Test-VsWorkflowProjectSettings
@@ -280,9 +242,6 @@ function global:Test-VsWorkflowProjectSettings
 
     Test-VsProjectPackage -projectfile $projectfile -packagename "Microsoft.CrmSdk.CoreAssemblies" | Out-Null
     Test-VsProjectPackage -projectfile $projectfile -packagename "Microsoft.CrmSdk.Workflow" | Out-Null
-    Test-VsProjectPackage -projectfile $projectfile -packagename "MSBuild.ILMerge.Task" | Out-Null
-    Test-MergeAssembliesExcluded $projectfile
-    Test-VsProjectScriptInvokedInBuildEvent -filename $projectfile -scriptname BuildEventILMergeCheck.ps1 | out-null
 }
 
 function global:Get-ScriptDirectory 
