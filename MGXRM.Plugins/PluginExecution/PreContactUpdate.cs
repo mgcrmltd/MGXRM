@@ -5,6 +5,9 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Plugins.PluginExecution
 {
+    [CrmPluginRegistration(MessageNameEnum.Update, Contact.EntityLogicalName, StageEnum.PreOperation,
+        ExecutionModeEnum.Synchronous, Contact.Fields.LastName, "Pre Contact Update", 10,
+        IsolationModeEnum.Sandbox, Id = "4dc8ac06-9bf3-4861-8321-41f9432aa804")]
     public class PreContactUpdate : Plugin
     {
         public PreContactUpdate()
