@@ -1,0 +1,32 @@
+{
+    /*
+    spkl task runner configuration - https://github.com/scottdurow/SparkleXrm/wiki/spkl
+
+    Tasks are run from the batch files in the 'spkl' folder next to this file; each
+    locates spkl.exe under packages\ automatically, so no path setup is needed.
+
+    The fully annotated template that ships with the package is preserved at
+    packages\spkl.1.0.640\content\spkl.json - copy the 'webresources', 'solutions'
+    or 'earlyboundtypes' sections from there if this project ever needs them.
+    */
+    "plugins": [
+        {
+            /*
+            Comma delimited profile names. Select one when calling spkl with /p:<profile>,
+            e.g. spkl\deploy-plugins.bat /p:debug
+            */
+            "profile": "default,debug",
+
+            /*
+            Path to the built assembly, relative to this file. spkl reflects over it to
+            find plugin and workflow activity classes and their registration attributes.
+            */
+            "assemblypath": "bin\\Debug"
+
+            /*
+            Optional - add the assembly and its steps to a solution on deploy:
+            ,"solution": "<SolutionUniqueName>"
+            */
+        }
+    ]
+}
