@@ -16,6 +16,19 @@ namespace MGXRM.Common.Framework.Model
     {
         private readonly IContactRepository _contacts;
 
+        /// <summary>
+        /// Wires up its own contact repository. This is the constructor the controller uses, and the one a
+        /// test uses when it is happy for the real queries to run - against a seeded CRM, for instance.
+        /// </summary>
+        public ContactModel(IImageManager<Contact> images, IContextManager<Contact> context, IRepository repository)
+            : this(images, context, repository, new ContactRepository(repository))
+        {
+        }
+
+        /// <summary>
+        /// Takes the contact repository instead of building one, for a test that wants to arrange what the
+        /// queries return. Add a constructor like this for each dependency that turns out to need faking.
+        /// </summary>
         public ContactModel(IImageManager<Contact> images, IContextManager<Contact> context, IRepository repository,
             IContactRepository contacts) : base(images, context, repository)
         {

@@ -13,15 +13,17 @@ namespace MGXRM.Common.Tests.Framework.Model
     public class ContactModelTest
     {
         /// <summary>
-        /// The contact repository decorates whatever repository the setup produced, so the same helper
-        /// serves both a faked repository and a real one over a seeded CRM.
+        /// Lets the model wire up its own contact repository. Because that repository decorates whatever
+        /// the setup produced, the model's real queries run against a seeded CRM with no wiring here.
         /// </summary>
         private static ContactModel ModelFor(ModelSetup<Contact> setup)
         {
-            return new ContactModel(setup.Images, setup.Context, setup.Repository,
-                new ContactRepository(setup.Repository));
+            return new ContactModel(setup.Images, setup.Context, setup.Repository);
         }
 
+        /// <summary>
+        /// Passes in a contact repository for the test to arrange.
+        /// </summary>
         private static ContactModel ModelFor(ModelSetup<Contact> setup, IContactRepository contacts)
         {
             return new ContactModel(setup.Images, setup.Context, setup.Repository, contacts);
