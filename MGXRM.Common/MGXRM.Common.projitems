@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\Contact.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Mode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Stage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\AzureQueueLogger\IQueueLogger.cs" />
@@ -30,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ContactModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\ContactRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\EnvironmentVariableRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\Repository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\RepositoryDecorator.cs" />
   </ItemGroup>

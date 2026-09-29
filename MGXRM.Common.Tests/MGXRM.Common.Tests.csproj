@@ -152,6 +152,7 @@
     <Compile Include="Framework\ImageManagement\ImageManagerTest.cs" />
     <Compile Include="Framework\Model\ContactModelTest.cs" />
     <Compile Include="Framework\Model\ModelBaseTest.cs" />
+    <Compile Include="Framework\Repositories\EnvironmentVariableRepositoryTest.cs" />
     <Compile Include="Framework\Repositories\RepositoryDecoratorTests.cs" />
     <Compile Include="Framework\Repositories\RepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
