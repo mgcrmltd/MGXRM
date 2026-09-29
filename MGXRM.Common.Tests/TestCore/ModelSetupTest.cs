@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using FakeItEasy;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.ContextManagement;
 using MGXRM.Common.Framework.Interfaces;
+using MGXRM.Common.Framework.Model;
+using MGXRM.Common.Framework.Repositories;
 using MGXRM.Common.Tests.TestCore;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
@@ -173,6 +177,159 @@ namespace MGXRM.Common.Tests.TestCore
 
         #endregion
 
+        #region Fake CRM
+
+        [Fact]
+        public void WithFakeCrm_Gives_The_Model_A_Real_Repository()
+        {
+            var setup = ModelSetup.For<TestSetupEntity>().WithFakeCrm();
+
+            Assert.IsType<Repository>(setup.Repository);
+            Assert.Same(setup.Service, setup.Repository.Service);
+        }
+
+        [Fact]
+        public void A_Real_Repository_Query_Finds_Seeded_Records()
+        {
+            var existing = new TestSetupEntity { Id = Guid.NewGuid(), Name = "smith" };
+
+            var setup = ModelSetup.For<TestSetupEntity>().WithFakeCrm(existing);
+
+            var found = setup.Repository.RetrieveByAttribute(TestSetupEntity.EntityLogicalName,
+                TestSetupEntity.Fields.Name, "smith");
+
+            Assert.Single(found);
+            Assert.Equal(existing.Id, found[0].Id);
+        }
+
+        [Fact]
+        public void Seeded_Records_Without_An_Id_Are_Given_One()
+        {
+            var existing = new TestSetupEntity { Name = "smith" };
+
+            var setup = ModelSetup.For<TestSetupEntity>().WithFakeCrm(existing);
+
+            Assert.NotEqual(Guid.Empty, existing.Id);
+            Assert.Single(setup.FakeCrm.CreateQuery<TestSetupEntity>());
+        }
+
+        [Fact]
+        public void Records_A_Model_Creates_Are_Readable_From_The_Fake_Crm()
+        {
+            var setup = ModelSetup.For<TestSetupEntity>().WithFakeCrm();
+
+            setup.Repository.Create(new TestSetupEntity { Name = "created" });
+
+            Assert.Equal("created", setup.FakeCrm.CreateQuery<TestSetupEntity>().Single().Name);
+        }
+
+        [Fact]
+        public void A_Supplied_Repository_Still_Wins_Over_The_Fake_Crm()
+        {
+            var repository = A.Fake<IRepository>();
+
+            var setup = ModelSetup.For<TestSetupEntity>().WithFakeCrm().WithRepository(repository);
+
+            Assert.Same(repository, setup.Repository);
+        }
+
+        [Fact]
+        public void FakeCrm_Explains_Itself_When_It_Was_Not_Asked_For()
+        {
+            var setup = ModelSetup.For<TestSetupEntity>();
+
+            var ex = Assert.Throws<InvalidOperationException>(() => setup.FakeCrm);
+            Assert.Contains("WithFakeCrm", ex.Message);
+        }
+
+        #endregion
+
+        #region Worked example - a model that uses the repository, tested both ways
+
+        /// <summary>
+        /// Arranging the repository. The test says what the repository returns and asserts what the model
+        /// asked it to do. Use this when the point is the conversation with the repository.
+        /// </summary>
+        [Fact]
+        public void A_Model_Can_Be_Tested_With_An_Arranged_Repository()
+        {
+            var repository = A.Fake<IRepository>();
+            A.CallTo(() => repository.RetrieveByAttribute(TestSetupEntity.EntityLogicalName,
+                    TestSetupEntity.Fields.Name, "smith"))
+                .Returns(new List<Entity> { new TestSetupEntity { Id = Guid.NewGuid(), Name = "smith" } });
+
+            var setup = ModelSetup.For<TestSetupEntity>()
+                .Update().PreOperation()
+                .WithTarget(e => e.Name = "smith")
+                .WithRepository(repository);
+
+            ModelFor(setup).FlagDuplicateName();
+
+            A.CallTo(() => repository.Create(A<Entity>.That.Matches(
+                e => (string)e[TestSetupEntity.Fields.Name] == "smith (duplicate)"))).MustHaveHappened();
+        }
+
+        /// <summary>
+        /// Seeding the data instead. The model's own query runs for real and finds it, and the record the
+        /// model wrote is read back out of the in-memory CRM. Use this when the point is the query itself.
+        /// </summary>
+        [Fact]
+        public void A_Model_Can_Be_Tested_Against_A_Seeded_Fake_Crm()
+        {
+            var existing = new TestSetupEntity { Id = Guid.NewGuid(), Name = "smith" };
+
+            var setup = ModelSetup.For<TestSetupEntity>()
+                .Update().PreOperation()
+                .WithTarget(e => e.Name = "smith")
+                .WithFakeCrm(existing);
+
+            ModelFor(setup).FlagDuplicateName();
+
+            var written = setup.FakeCrm.CreateQuery<TestSetupEntity>()
+                .Where(e => e.Name == "smith (duplicate)")
+                .ToList();
+            Assert.Single(written);
+        }
+
+        [Fact]
+        public void The_Model_Writes_Nothing_When_The_Query_Finds_No_Duplicate()
+        {
+            var setup = ModelSetup.For<TestSetupEntity>()
+                .Update().PreOperation()
+                .WithTarget(e => e.Name = "jones")
+                .WithFakeCrm(new TestSetupEntity { Id = Guid.NewGuid(), Name = "smith" });
+
+            ModelFor(setup).FlagDuplicateName();
+
+            Assert.Single(setup.FakeCrm.CreateQuery<TestSetupEntity>());
+        }
+
+        /// <summary>
+        /// The model must not treat the record being updated as its own duplicate.
+        /// </summary>
+        [Fact]
+        public void The_Model_Ignores_The_Record_Being_Updated()
+        {
+            var id = Guid.NewGuid();
+
+            var setup = ModelSetup.For<TestSetupEntity>()
+                .Update().PreOperation()
+                .WithId(id)
+                .WithTarget(e => e.Name = "smith")
+                .WithFakeCrm(new TestSetupEntity { Id = id, Name = "smith" });
+
+            ModelFor(setup).FlagDuplicateName();
+
+            Assert.Single(setup.FakeCrm.CreateQuery<TestSetupEntity>());
+        }
+
+        private static TestSetupModel ModelFor(ModelSetup<TestSetupEntity> setup)
+        {
+            return new TestSetupModel(setup.Images, setup.Context, setup.Repository);
+        }
+
+        #endregion
+
         #region Impossible setups
 
         [Fact]
@@ -245,7 +402,37 @@ namespace MGXRM.Common.Tests.TestCore
         #endregion
     }
 
-    #region Test entity
+    #region Test model and entity
+
+    /// <summary>
+    /// A stand in model that uses the repository, so the worked examples above have something to exercise
+    /// without depending on a real model.
+    /// </summary>
+    public class TestSetupModel : ModelBase<TestSetupEntity>
+    {
+        public TestSetupModel(IImageManager<TestSetupEntity> images, IContextManager<TestSetupEntity> context,
+            IRepository repository) : base(images, context, repository)
+        {
+        }
+
+        /// <summary>
+        /// Writes a marker record when another record already uses the name being set.
+        /// </summary>
+        public void FlagDuplicateName()
+        {
+            var name = Images.GetLatestString(TestSetupEntity.Fields.Name);
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            var matches = Repository.RetrieveByAttribute(TestSetupEntity.EntityLogicalName,
+                TestSetupEntity.Fields.Name, name);
+
+            if (matches.All(m => m.Id == Context.PrimaryEntityId))
+                return;
+
+            Repository.Create(new TestSetupEntity { Name = name + " (duplicate)" });
+        }
+    }
 
     /// <summary>
     /// A stand in early bound type, so these tests do not depend on any particular generated entity.

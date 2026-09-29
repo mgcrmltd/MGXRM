@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
 using FakeItEasy;
+using FakeXrmEasy;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.ContextManagement;
 using MGXRM.Common.Framework.ImageManagement;
 using MGXRM.Common.Framework.Interfaces;
+using MGXRM.Common.Framework.Repositories;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
@@ -61,6 +64,9 @@ namespace MGXRM.Common.Tests.TestCore
 
         private IRepository _repository;
         private IOrganizationService _service;
+        private bool _useFakeCrm;
+        private Entity[] _seedRecords = new Entity[0];
+        private XrmFakedContext _fakeCrm;
 
         private IPluginExecutionContext _executionContext;
         private IContextManager<T> _builtContext;
@@ -297,13 +303,70 @@ namespace MGXRM.Common.Tests.TestCore
             return this;
         }
 
+        /// <summary>
+        /// Swaps the faked repository for a real <see cref="Repository"/> over an in-memory CRM seeded with
+        /// <paramref name="existingRecords"/>, so the model's own queries run for real and find the data:
+        /// <code>
+        /// var setup = ModelSetup.For&lt;Contact&gt;()
+        ///     .Update().PreOperation()
+        ///     .WithTarget(c =&gt; c.LastName = "jones")
+        ///     .WithFakeCrm(existingAccount);
+        ///
+        /// ModelFor(setup).DoSomething();
+        ///
+        /// Assert.Single(setup.FakeCrm.CreateQuery&lt;Task&gt;());
+        /// </code>
+        /// Use this when the point of the test is the query or the records written. Leave it off and arrange
+        /// <see cref="Repository"/> with FakeItEasy when the point is what the model asks the repository for.
+        /// Seeded records without an Id are given one, since the in-memory CRM needs to key them.
+        /// </summary>
+        public ModelSetup<T> WithFakeCrm(params Entity[] existingRecords)
+        {
+            AssertNotBuilt();
+            _useFakeCrm = true;
+            _seedRecords = existingRecords ?? new Entity[0];
+            foreach (var record in _seedRecords.Where(r => r != null && r.Id == Guid.Empty))
+                record.Id = Guid.NewGuid();
+            return this;
+        }
+
         #endregion
 
         #region Built objects
 
-        public IOrganizationService Service => _service ?? (_service = A.Fake<IOrganizationService>());
+        public IOrganizationService Service
+        {
+            get
+            {
+                Build();
+                return _service;
+            }
+        }
 
-        public IRepository Repository => _repository ?? (_repository = A.Fake<IRepository>());
+        public IRepository Repository
+        {
+            get
+            {
+                Build();
+                return _repository;
+            }
+        }
+
+        /// <summary>
+        /// The in-memory CRM, for seeding assertions after the model has run. Only available when the setup
+        /// asked for it with <see cref="WithFakeCrm"/>.
+        /// </summary>
+        public XrmFakedContext FakeCrm
+        {
+            get
+            {
+                Build();
+                if (_fakeCrm == null)
+                    throw new InvalidOperationException(
+                        "This setup has no fake CRM. Add WithFakeCrm(...) if the test needs the model's queries to run for real.");
+                return _fakeCrm;
+            }
+        }
 
         public IContextManager<T> Context
         {
@@ -345,11 +408,34 @@ namespace MGXRM.Common.Tests.TestCore
                 return;
 
             AssertSetupIsPossible();
+            BuildDependencies();
             _executionContext = BuildExecutionContext();
-            var contextManager = new PluginContextManager<T>(_executionContext, Service);
+            var contextManager = new PluginContextManager<T>(_executionContext, _service);
             _builtContext = contextManager;
             _builtImages = new ImageManager<T>(contextManager.PreImage, contextManager.TargetImage,
                 contextManager.PostImage);
+        }
+
+        private void BuildDependencies()
+        {
+            if (_useFakeCrm)
+            {
+                _fakeCrm = new XrmFakedContext
+                {
+                    ProxyTypesAssembly = typeof(T).Assembly,
+                    CallerId = new EntityReference("systemuser", _userId)
+                };
+
+                if (_seedRecords.Any())
+                    _fakeCrm.Initialize(_seedRecords);
+
+                _service = _service ?? _fakeCrm.GetOrganizationService();
+                _repository = _repository ?? new Repository(_service);
+                return;
+            }
+
+            _service = _service ?? A.Fake<IOrganizationService>();
+            _repository = _repository ?? A.Fake<IRepository>();
         }
 
         private IPluginExecutionContext BuildExecutionContext()
