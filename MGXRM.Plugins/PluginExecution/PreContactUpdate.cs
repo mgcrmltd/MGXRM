@@ -14,7 +14,7 @@ namespace MGXRM.Plugins.PluginExecution
             : base(typeof(PreContactUpdate))
         {
             base.RegisteredEvents.Add(new Tuple<int, string, string, Action<LocalPluginContext>>(20, "Update",
-                "incident", ExecutePreContactUpdate));
+                Contact.EntityLogicalName, ExecutePreContactUpdate));
         }
         
         protected void ExecutePreContactUpdate(LocalPluginContext localContext)
