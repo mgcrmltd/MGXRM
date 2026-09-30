@@ -114,6 +114,42 @@ namespace MGXRM.Plugins.Tests.Framework
             return this;
         }
 
+        public PluginAssertions<TPlugin> IsCustomApi(string uniqueName)
+        {
+            Assert.True(IsCustomApiRegistration(Current),
+                $"{Name} is registered at stage {DescribeStage(Current.Stage)}. A custom api registration names only the api, leaving the stage unset.");
+            Assert.True(Current.Message == uniqueName,
+                $"{Name} is registered for custom api '{Current.Message}' but '{uniqueName}' was expected.");
+
+            var mainOperation = _events
+                .Where(e => e.Message == uniqueName && e.Stage == Plugins.CustomApi.MainOperationStage)
+                .ToList();
+            Assert.True(mainOperation.Count == 1,
+                $"{Name} was expected to register one main operation handler for '{uniqueName}' at stage {Plugins.CustomApi.MainOperationStage} but registers {mainOperation.Count}. Registered events: {DescribeEvents()}.");
+
+            return this;
+        }
+
+        public PluginAssertions<TPlugin> IsBoundTo(string entityLogicalName)
+        {
+            var bound = _events
+                .Where(e => e.Message == Current.Message && e.EntityLogicalName == entityLogicalName)
+                .ToList();
+            Assert.True(bound.Count == 1,
+                $"{Name} was expected to be bound to '{entityLogicalName}'. Registered events: {DescribeEvents()}.");
+            return this;
+        }
+
+        public PluginAssertions<TPlugin> IsUnbound()
+        {
+            var unbound = _events
+                .Where(e => e.Message == Current.Message && string.IsNullOrWhiteSpace(e.EntityLogicalName))
+                .ToList();
+            Assert.True(unbound.Count == 1,
+                $"{Name} was expected to be unbound. Registered events: {DescribeEvents()}.");
+            return this;
+        }
+
         public PluginAssertions<TPlugin> HasStepName(string stepName)
         {
             Assert.True(Current.Name == stepName,
@@ -334,9 +370,6 @@ namespace MGXRM.Plugins.Tests.Framework
         {
             foreach (var registration in _registrations)
             {
-                Assert.True(registration.Stage.HasValue,
-                    $"{Name} step '{registration.Name}' has no stage, so it cannot be matched to a registered event.");
-
                 var matches = _events.Where(e => Matches(e, registration)).ToList();
                 Assert.True(matches.Count == 1,
                     $"{Name} step '{registration.Name}' ({registration.Message} on '{registration.EntityLogicalName}' at stage {DescribeStage(registration.Stage)}) matches {matches.Count} entries in RegisteredEvents. Registered events: {DescribeEvents()}.");
@@ -354,13 +387,19 @@ namespace MGXRM.Plugins.Tests.Framework
 
         private static bool Matches(RegisteredEvent registeredEvent, CrmPluginRegistrationAttribute registration)
         {
-            if (!registration.Stage.HasValue)
-                return false;
+            var expectedStage = registration.Stage.HasValue
+                ? (int)registration.Stage.Value
+                : Plugins.CustomApi.MainOperationStage;
 
-            return registeredEvent.Stage == (int)registration.Stage.Value
+            return registeredEvent.Stage == expectedStage
                    && registeredEvent.Message == registration.Message
                    && (string.IsNullOrWhiteSpace(registeredEvent.EntityLogicalName)
                        || registeredEvent.EntityLogicalName == registration.EntityLogicalName);
+        }
+
+        private static bool IsCustomApiRegistration(CrmPluginRegistrationAttribute registration)
+        {
+            return !registration.Stage.HasValue;
         }
 
         /// <summary>
