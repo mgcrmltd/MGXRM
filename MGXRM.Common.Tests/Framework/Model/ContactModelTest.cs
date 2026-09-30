@@ -298,5 +298,68 @@ namespace MGXRM.Common.Tests.Framework.Model
         }
 
         #endregion
+
+        #region FindDuplicatesByEmail - the domain rule tested through an api shaped setup
+
+        [Fact]
+        public void FindDuplicatesByEmail_Counts_Contacts_Sharing_The_Email()
+        {
+            var setup = ApiSetupFor("bob@example.com")
+                .WithFakeCrm(new Contact { Id = Guid.NewGuid(), EmailAddress1 = "bob@example.com" });
+
+            ModelFor(setup).FindDuplicatesByEmail();
+
+            Assert.Equal(1, setup.OutputParameters[ContactModel.DuplicateCountProperty]);
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Returns_The_First_Match()
+        {
+            var existing = new Contact { Id = Guid.NewGuid(), EmailAddress1 = "bob@example.com" };
+            var setup = ApiSetupFor("bob@example.com").WithFakeCrm(existing);
+
+            ModelFor(setup).FindDuplicatesByEmail();
+
+            var match = (EntityReference)setup.OutputParameters[ContactModel.FirstMatchProperty];
+            Assert.Equal(existing.Id, match.Id);
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Excludes_The_Contact_Named_In_The_Request()
+        {
+            var id = Guid.NewGuid();
+            var setup = ApiSetupFor("bob@example.com")
+                .WithParameter(ContactModel.ExcludeContactIdParameter, id)
+                .WithFakeCrm(new Contact { Id = id, EmailAddress1 = "bob@example.com" });
+
+            ModelFor(setup).FindDuplicatesByEmail();
+
+            Assert.Equal(0, setup.OutputParameters[ContactModel.DuplicateCountProperty]);
+            Assert.False(setup.OutputParameters.Contains(ContactModel.FirstMatchProperty));
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Rejects_A_Missing_Email_Parameter()
+        {
+            var setup = CustomApiSetup.For<Contact>("mgxrm_FindDuplicateContacts").WithFakeCrm();
+
+            var ex = Assert.Throws<InvalidPluginExecutionException>(
+                () => ModelFor(setup).FindDuplicatesByEmail());
+
+            Assert.Contains(ContactModel.EmailAddressParameter, ex.Message);
+        }
+
+        private static CustomApiSetup<Contact> ApiSetupFor(string email)
+        {
+            return CustomApiSetup.For<Contact>("mgxrm_FindDuplicateContacts")
+                .WithParameter(ContactModel.EmailAddressParameter, email);
+        }
+
+        private static ContactModel ModelFor(CustomApiSetup<Contact> setup)
+        {
+            return new ContactModel(setup.Images, setup.Context, setup.Repository);
+        }
+
+        #endregion
     }
 }

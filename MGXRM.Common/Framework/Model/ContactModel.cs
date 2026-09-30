@@ -1,5 +1,7 @@
-﻿using MGXRM.Common.EarlyBounds;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.Interfaces;
 using MGXRM.Common.Framework.Repositories;
 using Microsoft.Xrm.Sdk;
@@ -11,10 +13,16 @@ namespace MGXRM.Common.Framework.Model
         void MakeSurnameUppercase();
         void EnforceSurnameRequired();
         void EnforceEmailIsUnique();
+        void FindDuplicatesByEmail();
     }
     public class ContactModel : ModelBase<Contact>, IContactModel
     {
         public const string EnforceUniqueEmailVariable = "mgxrm_EnforceUniqueContactEmail";
+
+        public const string EmailAddressParameter = "EmailAddress";
+        public const string ExcludeContactIdParameter = "ExcludeContactId";
+        public const string DuplicateCountProperty = "DuplicateCount";
+        public const string FirstMatchProperty = "FirstMatch";
 
         private readonly IContactRepository _contacts;
 
@@ -59,9 +67,31 @@ namespace MGXRM.Common.Framework.Model
 
             if (EnvironmentVariables.GetBoolean(EnforceUniqueEmailVariable) == false) return;
 
-            var otherContacts = _contacts.GetByEmail(email).Where(c => c.Id != Context.PrimaryEntityId);
-            if (otherContacts.Any())
+            if (DuplicatesByEmail(email, Context.PrimaryEntityId).Any())
                 throw new InvalidPluginExecutionException($"{email} is already used by another contact.");
+        }
+
+        public void FindDuplicatesByEmail()
+        {
+            var email = Request.RequireString(EmailAddressParameter);
+            var excludeContactId = Request.GetGuid(ExcludeContactIdParameter);
+
+            var duplicates = DuplicatesByEmail(email, excludeContactId);
+
+            Response.SetInteger(DuplicateCountProperty, duplicates.Count);
+
+            if (duplicates.Any())
+                Response.SetEntityReference(FirstMatchProperty, duplicates.First().ToEntityReference());
+        }
+
+        private List<Contact> DuplicatesByEmail(string email, Guid? excludeContactId)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return new List<Contact>();
+
+            return _contacts.GetByEmail(email)
+                .Where(c => !excludeContactId.HasValue || c.Id != excludeContactId.Value)
+                .ToList();
         }
     }
 }
