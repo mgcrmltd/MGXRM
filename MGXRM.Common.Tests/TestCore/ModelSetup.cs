@@ -12,9 +12,6 @@ using Microsoft.Xrm.Sdk.Client;
 
 namespace MGXRM.Common.Tests.TestCore
 {
-    /// <summary>
-    /// Entry point for describing the plugin pipeline position a model is being tested in.
-    /// </summary>
     public static class ModelSetup
     {
         public static ModelSetup<T> For<T>() where T : Entity, new()
@@ -23,24 +20,6 @@ namespace MGXRM.Common.Tests.TestCore
         }
     }
 
-    /// <summary>
-    /// Describes a pipeline position and its images, then hands back the three things a model needs:
-    /// <code>
-    /// var setup = ModelSetup.For&lt;Contact&gt;()
-    ///     .Update().PreOperation().Synchronous().Depth(1)
-    ///     .WithPreImage(c =&gt; c.LastName = "smith")
-    ///     .WithTarget(c =&gt; c.LastName = "jones");
-    ///
-    /// var model = new ContactModel(setup.Images, setup.Context, setup.Repository);
-    /// model.MakeSurnameUppercase();
-    ///
-    /// Assert.Equal("JONES", setup.Images.TargetImage.LastName);
-    /// </code>
-    /// The context is a real <see cref="PluginContextManager{T}"/> over a faked
-    /// <see cref="IPluginExecutionContext"/>, and the images are built from that context exactly the way
-    /// ControllerBase builds them in production. A test written against this therefore exercises the real
-    /// image aliases and the real context manager rather than a stand-in for them.
-    /// </summary>
     public class ModelSetup<T> where T : Entity, new()
     {
         #region Members
@@ -217,10 +196,6 @@ namespace MGXRM.Common.Tests.TestCore
 
         #region Images
 
-        /// <summary>
-        /// Adds a pre image. Only the attributes the lambda sets are present, which is what a real pre
-        /// image looks like - it contains the attributes the step registration asked for, nothing else.
-        /// </summary>
         public ModelSetup<T> WithPreImage(Action<T> configure = null)
         {
             AssertNotBuilt();
@@ -235,10 +210,6 @@ namespace MGXRM.Common.Tests.TestCore
             return this;
         }
 
-        /// <summary>
-        /// Adds the target. Only the attributes the lambda sets are present, matching a real update target
-        /// which carries just the changed attributes.
-        /// </summary>
         public ModelSetup<T> WithTarget(Action<T> configure = null)
         {
             AssertNotBuilt();
@@ -285,10 +256,6 @@ namespace MGXRM.Common.Tests.TestCore
 
         #region Dependencies
 
-        /// <summary>
-        /// Replaces the faked repository, for a test that wants to arrange its own calls before the
-        /// model is constructed.
-        /// </summary>
         public ModelSetup<T> WithRepository(IRepository repository)
         {
             AssertNotBuilt();
@@ -303,23 +270,6 @@ namespace MGXRM.Common.Tests.TestCore
             return this;
         }
 
-        /// <summary>
-        /// Swaps the faked repository for a real <see cref="Repository"/> over an in-memory CRM seeded with
-        /// <paramref name="existingRecords"/>, so the model's own queries run for real and find the data:
-        /// <code>
-        /// var setup = ModelSetup.For&lt;Contact&gt;()
-        ///     .Update().PreOperation()
-        ///     .WithTarget(c =&gt; c.LastName = "jones")
-        ///     .WithFakeCrm(existingAccount);
-        ///
-        /// ModelFor(setup).DoSomething();
-        ///
-        /// Assert.Single(setup.FakeCrm.CreateQuery&lt;Task&gt;());
-        /// </code>
-        /// Use this when the point of the test is the query or the records written. Leave it off and arrange
-        /// <see cref="Repository"/> with FakeItEasy when the point is what the model asks the repository for.
-        /// Seeded records without an Id are given one, since the in-memory CRM needs to key them.
-        /// </summary>
         public ModelSetup<T> WithFakeCrm(params Entity[] existingRecords)
         {
             AssertNotBuilt();
@@ -352,10 +302,6 @@ namespace MGXRM.Common.Tests.TestCore
             }
         }
 
-        /// <summary>
-        /// The in-memory CRM, for seeding assertions after the model has run. Only available when the setup
-        /// asked for it with <see cref="WithFakeCrm"/>.
-        /// </summary>
         public XrmFakedContext FakeCrm
         {
             get
@@ -377,10 +323,6 @@ namespace MGXRM.Common.Tests.TestCore
             }
         }
 
-        /// <summary>
-        /// Built from the context the same way ControllerBase does it, so the image aliases are exercised
-        /// rather than bypassed.
-        /// </summary>
         public IImageManager<T> Images
         {
             get
@@ -390,9 +332,6 @@ namespace MGXRM.Common.Tests.TestCore
             }
         }
 
-        /// <summary>
-        /// The faked execution context, for the rare test that needs to assert on it directly.
-        /// </summary>
         public IPluginExecutionContext ExecutionContext
         {
             get
@@ -496,11 +435,6 @@ namespace MGXRM.Common.Tests.TestCore
                     "The setup has already been built. Finish configuring it before reading Context or Images.");
         }
 
-        /// <summary>
-        /// Rejects pipeline positions CRM would never produce, so a test cannot pass against a context
-        /// that could not occur. Checked when the setup is built rather than as each value is set, so the
-        /// order of the chain does not matter.
-        /// </summary>
         private void AssertSetupIsPossible()
         {
             var isPreStage = _stage == SdkMessageProcessingStep_Stage.Prevalidation ||

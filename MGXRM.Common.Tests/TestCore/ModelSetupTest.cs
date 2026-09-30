@@ -117,10 +117,6 @@ namespace MGXRM.Common.Tests.TestCore
             Assert.Equal("jones", setup.Images.PostImage.Name);
         }
 
-        /// <summary>
-        /// The images must be registered under the aliases PluginContextManager reads, otherwise a model
-        /// test would pass against images a real plugin could never see.
-        /// </summary>
         [Fact]
         public void Images_Are_Registered_Under_The_Context_Manager_Aliases()
         {
@@ -246,10 +242,6 @@ namespace MGXRM.Common.Tests.TestCore
 
         #region Worked example - a model that uses the repository, tested both ways
 
-        /// <summary>
-        /// Arranging the repository. The test says what the repository returns and asserts what the model
-        /// asked it to do. Use this when the point is the conversation with the repository.
-        /// </summary>
         [Fact]
         public void A_Model_Can_Be_Tested_With_An_Arranged_Repository()
         {
@@ -269,10 +261,6 @@ namespace MGXRM.Common.Tests.TestCore
                 e => (string)e[TestSetupEntity.Fields.Name] == "smith (duplicate)"))).MustHaveHappened();
         }
 
-        /// <summary>
-        /// Seeding the data instead. The model's own query runs for real and finds it, and the record the
-        /// model wrote is read back out of the in-memory CRM. Use this when the point is the query itself.
-        /// </summary>
         [Fact]
         public void A_Model_Can_Be_Tested_Against_A_Seeded_Fake_Crm()
         {
@@ -304,9 +292,6 @@ namespace MGXRM.Common.Tests.TestCore
             Assert.Single(setup.FakeCrm.CreateQuery<TestSetupEntity>());
         }
 
-        /// <summary>
-        /// The model must not treat the record being updated as its own duplicate.
-        /// </summary>
         [Fact]
         public void The_Model_Ignores_The_Record_Being_Updated()
         {
@@ -368,10 +353,6 @@ namespace MGXRM.Common.Tests.TestCore
             Assert.Contains("EntityReference as its Target", ex.Message);
         }
 
-        /// <summary>
-        /// The order of the chain must not change what is legal, so the guards run when the setup is
-        /// built rather than as each value is set.
-        /// </summary>
         [Fact]
         public void Chain_Order_Does_Not_Affect_What_Is_Legal()
         {
@@ -404,10 +385,6 @@ namespace MGXRM.Common.Tests.TestCore
 
     #region Test model and entity
 
-    /// <summary>
-    /// A stand in model that uses the repository, so the worked examples above have something to exercise
-    /// without depending on a real model.
-    /// </summary>
     public class TestSetupModel : ModelBase<TestSetupEntity>
     {
         public TestSetupModel(IImageManager<TestSetupEntity> images, IContextManager<TestSetupEntity> context,
@@ -415,9 +392,6 @@ namespace MGXRM.Common.Tests.TestCore
         {
         }
 
-        /// <summary>
-        /// Writes a marker record when another record already uses the name being set.
-        /// </summary>
         public void FlagDuplicateName()
         {
             var name = Images.GetLatestString(TestSetupEntity.Fields.Name);
@@ -434,9 +408,6 @@ namespace MGXRM.Common.Tests.TestCore
         }
     }
 
-    /// <summary>
-    /// A stand in early bound type, so these tests do not depend on any particular generated entity.
-    /// </summary>
     [EntityLogicalName(EntityLogicalName)]
     public class TestSetupEntity : Entity
     {

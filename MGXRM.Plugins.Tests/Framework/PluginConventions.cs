@@ -5,17 +5,8 @@ using Xunit;
 
 namespace MGXRM.Plugins.Tests.Framework
 {
-    /// <summary>
-    /// Checks that apply across every plugin in the assembly rather than to one class. These back the
-    /// tests in <c>PluginConventionTests</c> and are also reachable from a single
-    /// plugin's chain - <see cref="PluginAssertions{TPlugin}.HasUniqueId"/> uses the id check below.
-    /// </summary>
     public static class PluginConventions
     {
-        /// <summary>
-        /// Every step Id in the assembly is present, is a guid, and is used by exactly one step.
-        /// A shared id makes spkl overwrite one step's registration with another's on deployment.
-        /// </summary>
         public static void AssertRegistrationIdsAreUnique()
         {
             var steps = AllSteps().ToList();
@@ -37,9 +28,6 @@ namespace MGXRM.Plugins.Tests.Framework
                 $"These step Ids are used more than once: {string.Join("; ", duplicates.Select(g => $"{g.Key} -> {Describe(g)}"))}.");
         }
 
-        /// <summary>
-        /// Every plugin declares at least one step, so nothing is left undeployable by accident.
-        /// </summary>
         public static void AssertEveryPluginIsRegistered()
         {
             var unregistered = PluginReflection.GetPluginTypes()
@@ -50,18 +38,12 @@ namespace MGXRM.Plugins.Tests.Framework
                 $"These plugins have no CrmPluginRegistrationAttribute and would never be deployed: {string.Join(", ", unregistered.Select(t => t.Name))}.");
         }
 
-        /// <summary>
-        /// Every plugin's attributes agree with the RegisteredEvents entries in its constructor.
-        /// </summary>
         public static void AssertRegistrationsMatchRegisteredEvents()
         {
             foreach (var pluginType in PluginReflection.GetPluginTypes())
                 new PluginAssertions<Plugin>(pluginType).MatchesRegisteredEvents();
         }
 
-        /// <summary>
-        /// Every image in the assembly is named the way PluginContextManager reads it.
-        /// </summary>
         public static void AssertImagesUseContextManagerNames()
         {
             foreach (var pluginType in PluginReflection.GetPluginTypes())

@@ -5,11 +5,6 @@ using System.Reflection.Emit;
 
 namespace MGXRM.Plugins.Tests.Framework
 {
-    /// <summary>
-    /// A minimal IL walker. It is used to work out which methods a plugin execute method actually calls,
-    /// so a test can assert "this plugin hands off to that controller operation" without having to stand up
-    /// a full fake pipeline for a method that does nothing but delegate.
-    /// </summary>
     internal static class IlReader
     {
         private static readonly OpCode[] SingleByteOpCodes = new OpCode[0x100];
@@ -27,10 +22,6 @@ namespace MGXRM.Plugins.Tests.Framework
             }
         }
 
-        /// <summary>
-        /// Every method referenced by a call, callvirt, newobj, ldftn etc. in the body of <paramref name="method"/>.
-        /// Tokens that do not resolve to a method (field and type tokens on ldtoken, for example) are skipped.
-        /// </summary>
         public static IEnumerable<MethodBase> GetCalledMethods(MethodBase method)
         {
             if (method == null)
@@ -65,7 +56,7 @@ namespace MGXRM.Plugins.Tests.Framework
                     yield break;
 
                 if (opCode.Size == 0)
-                    yield break; // Unrecognised opcode - we can no longer trust our position in the stream.
+                    yield break;
 
                 MethodBase called = null;
                 if (opCode.OperandType == OperandType.InlineMethod || opCode.OperandType == OperandType.InlineTok)
@@ -77,7 +68,6 @@ namespace MGXRM.Plugins.Tests.Framework
                     }
                     catch (ArgumentException)
                     {
-                        // The token was a field or a type - not something we care about here.
                     }
                 }
 

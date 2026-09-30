@@ -17,10 +17,6 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
         #region The query, against seeded records
 
-        /// <summary>
-        /// Seeding the two records the platform actually stores, so these cover the query shape - the outer
-        /// join and the fallback - rather than a stated answer.
-        /// </summary>
         [Fact]
         public void The_Current_Value_Wins_Over_The_Default()
         {
@@ -74,10 +70,6 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             Assert.Equal("wanted", repository.GetString(SchemaName));
         }
 
-        /// <summary>
-        /// A schema name with no definition is a typo or a solution that has not been imported, not a
-        /// variable that happens to be unset, so it fails loudly rather than returning null.
-        /// </summary>
         [Fact]
         public void A_Missing_Definition_Throws()
         {
@@ -108,10 +100,6 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             Assert.Equal((decimal)expected, Holding(stored).GetDecimal(SchemaName));
         }
 
-        /// <summary>
-        /// Dataverse stores a Yes/No variable as "yes" or "no". The other forms turn up when a value has
-        /// been set by code or edited by hand.
-        /// </summary>
         [Theory]
         [InlineData("yes", true)]
         [InlineData("no", false)]
@@ -161,10 +149,6 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
         #region Unusable values
 
-        /// <summary>
-        /// A value that cannot be read as the type the caller asked for is a configuration error. Returning
-        /// null would let it run on with a silently missing setting.
-        /// </summary>
         [Fact]
         public void A_Value_That_Is_Not_A_Whole_Number_Throws()
         {
@@ -210,10 +194,6 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
         #region Caching
 
-        /// <summary>
-        /// Models read the same variable repeatedly in one execution, and the value cannot change under
-        /// them, so it is only queried once.
-        /// </summary>
         [Fact]
         public void A_Variable_Is_Only_Queried_Once()
         {
@@ -243,19 +223,12 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
         #region Helpers
 
-        /// <summary>
-        /// A repository over an in-memory CRM holding the given environment variable records.
-        /// </summary>
         private static IEnvironmentVariableRepository SeededWith(params Entity[] records)
         {
             var setup = ModelSetup.For<EnvironmentVariableDefinition>().WithFakeCrm(records);
             return new EnvironmentVariableRepository(setup.Repository);
         }
 
-        /// <summary>
-        /// A repository whose query is arranged to come back holding <paramref name="value"/>, for the
-        /// tests about reading a value rather than finding it.
-        /// </summary>
         private static IEnvironmentVariableRepository Holding(string value)
         {
             return new EnvironmentVariableRepository(FakeRepositoryHolding(value));

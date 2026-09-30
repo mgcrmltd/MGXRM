@@ -5,11 +5,6 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ContextManagement
 {
-    /// <summary>
-    /// The image aliases that <see cref="PluginContextManager{T}"/> reads from the plugin execution context.
-    /// Plugin step registrations must use these names for their images, otherwise the images will never be
-    /// picked up by the framework.
-    /// </summary>
     public static class PluginContextManager
     {
         public const string PreImageAlias = "PreImage";

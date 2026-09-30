@@ -5,11 +5,6 @@ using Microsoft.Xrm.Sdk.Client;
 
 namespace MGXRM.Common.EarlyBounds
 {
-    /// <summary>
-    /// Hand-written early bound type for the environment variable value entity - the half that holds what
-    /// this particular environment overrode the definition's default with. A variable left at its default
-    /// has no record here at all, which is why it has to be outer joined.
-    /// </summary>
     [DataContract]
     [EntityLogicalName(EntityLogicalName)]
     public class EnvironmentVariableValue : Entity

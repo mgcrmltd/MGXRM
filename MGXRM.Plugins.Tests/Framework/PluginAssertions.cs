@@ -7,21 +7,6 @@ using Xunit;
 
 namespace MGXRM.Plugins.Tests.Framework
 {
-    /// <summary>
-    /// Fluent assertions over a single plugin class. Every method returns the same instance so a whole
-    /// registration can be verified in one chain:
-    /// <code>
-    /// PluginUnderTest
-    ///     .IsRegisteredFor(MessageNameEnum.Update, Contact.EntityLogicalName)
-    ///     .IsPreOperation()
-    ///     .IsSynchronous()
-    ///     .IsSandbox()
-    ///     .HasOrder(10)
-    ///     .HasSingleFilteringAttribute(Contact.Fields.LastName)
-    ///     .MatchesRegisteredEvents()
-    ///     .InvokesControllerOperation&lt;ContactController&gt;(nameof(ContactController.PreUpdate));
-    /// </code>
-    /// </summary>
     public class PluginAssertions<TPlugin> where TPlugin : Plugin
     {
         private readonly Type _pluginType;
@@ -33,9 +18,6 @@ namespace MGXRM.Plugins.Tests.Framework
         {
         }
 
-        /// <summary>
-        /// Used by the assembly wide convention tests, which only know the plugin type at run time.
-        /// </summary>
         internal PluginAssertions(Type pluginType)
         {
             _pluginType = pluginType;
@@ -45,10 +27,6 @@ namespace MGXRM.Plugins.Tests.Framework
 
         private string Name => _pluginType.Name;
 
-        /// <summary>
-        /// The registration currently under assertion. Where a plugin declares more than one step,
-        /// pick one first with <see cref="ForStep"/> or <see cref="ForMessage(string)"/>.
-        /// </summary>
         private CrmPluginRegistrationAttribute Current
         {
             get
@@ -204,9 +182,6 @@ namespace MGXRM.Plugins.Tests.Framework
             return HasFilteringAttributes(filteringAttribute);
         }
 
-        /// <summary>
-        /// Asserts the step filters on exactly the given attributes, in any order.
-        /// </summary>
         public PluginAssertions<TPlugin> HasFilteringAttributes(params string[] filteringAttributes)
         {
             var actual = PluginReflection.GetFilteringAttributes(Current);
@@ -222,10 +197,6 @@ namespace MGXRM.Plugins.Tests.Framework
 
         #region Images
 
-        /// <summary>
-        /// Asserts a pre image is registered, and that it is registered under the alias
-        /// <see cref="PluginContextManager{T}"/> reads.
-        /// </summary>
         public PluginAssertions<TPlugin> HasPreImage()
         {
             return HasImage(ImageTypeEnum.PreImage);
@@ -275,10 +246,6 @@ namespace MGXRM.Plugins.Tests.Framework
             return this;
         }
 
-        /// <summary>
-        /// Asserts every image on every registration of this plugin is named the way
-        /// <see cref="PluginContextManager{T}"/> expects.
-        /// </summary>
         public PluginAssertions<TPlugin> ImagesUseContextManagerNames()
         {
             foreach (var registration in _registrations)
@@ -311,9 +278,6 @@ namespace MGXRM.Plugins.Tests.Framework
             return this;
         }
 
-        /// <summary>
-        /// Asserts this plugin has an Id on every step, and that no other plugin in the assembly reuses it.
-        /// </summary>
         public PluginAssertions<TPlugin> HasUniqueId()
         {
             HasId();
@@ -325,11 +289,6 @@ namespace MGXRM.Plugins.Tests.Framework
 
         #region Attribute / RegisteredEvents consistency
 
-        /// <summary>
-        /// Asserts the CrmPluginRegistrationAttribute values line up with the
-        /// <c>base.RegisteredEvents.Add(...)</c> entries in the constructor. A mismatch means the step is
-        /// deployed but the plugin body never runs.
-        /// </summary>
         public PluginAssertions<TPlugin> MatchesRegisteredEvents()
         {
             foreach (var registration in _registrations)
@@ -363,11 +322,6 @@ namespace MGXRM.Plugins.Tests.Framework
                        || registeredEvent.EntityLogicalName == registration.EntityLogicalName);
         }
 
-        /// <summary>
-        /// The consistency checks that should hold for every plugin: an Id that is unique across the
-        /// assembly, images named the way the framework reads them, and attributes that agree with the
-        /// registered events.
-        /// </summary>
         public PluginAssertions<TPlugin> IsConsistent()
         {
             return HasUniqueId()
@@ -379,12 +333,6 @@ namespace MGXRM.Plugins.Tests.Framework
 
         #region Execution
 
-        /// <summary>
-        /// Asserts the execute method for the current step constructs <typeparamref name="TController"/>
-        /// and calls <paramref name="operationName"/> on it. This reads the IL of the execute method, so
-        /// it needs no fake pipeline - use it for the usual "plugin delegates straight to a controller"
-        /// shape, and write a normal test with fakes when the method does real work.
-        /// </summary>
         public PluginAssertions<TPlugin> InvokesControllerOperation<TController>(string operationName)
         {
             var calls = CallsForCurrentStep();

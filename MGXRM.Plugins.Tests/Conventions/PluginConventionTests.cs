@@ -3,10 +3,6 @@ using Xunit;
 
 namespace MGXRM.Plugins.Tests.Conventions
 {
-    /// <summary>
-    /// Assembly wide checks. These cover every plugin as it is added, so a new class picks them up
-    /// without anyone having to remember to write them.
-    /// </summary>
     public class PluginConventionTests
     {
         [Fact]

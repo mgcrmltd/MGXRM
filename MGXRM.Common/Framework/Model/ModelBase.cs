@@ -10,10 +10,6 @@ namespace MGXRM.Common.Framework.Model
         protected IContextManager<T> Context { get; }
         protected IRepository Repository { get; }
 
-        /// <summary>
-        /// Environment variables, available to every model because most of them end up needing a
-        /// configured value at some point.
-        /// </summary>
         protected IEnvironmentVariableRepository EnvironmentVariables { get; }
 
         protected ModelBase(IImageManager<T> images, IContextManager<T> context, IRepository repository)
@@ -21,10 +17,6 @@ namespace MGXRM.Common.Framework.Model
         {
         }
 
-        /// <summary>
-        /// Takes the environment variable repository instead of building one, for a test that wants to
-        /// state what a variable holds rather than seed the records behind it.
-        /// </summary>
         protected ModelBase(IImageManager<T> images, IContextManager<T> context, IRepository repository,
             IEnvironmentVariableRepository environmentVariables)
         {

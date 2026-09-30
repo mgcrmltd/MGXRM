@@ -7,9 +7,6 @@ using MGXRM.Common.Framework.ContextManagement;
 
 namespace MGXRM.Plugins.Tests.Framework
 {
-    /// <summary>
-    /// One entry from the <c>base.RegisteredEvents.Add(...)</c> calls in a plugin's constructor.
-    /// </summary>
     public class RegisteredEvent
     {
         public int Stage { get; }
@@ -31,10 +28,6 @@ namespace MGXRM.Plugins.Tests.Framework
         }
     }
 
-    /// <summary>
-    /// One <see cref="CrmPluginRegistrationAttribute"/> image slot, flattened so the two numbered
-    /// slots on the attribute can be treated as a collection.
-    /// </summary>
     public class RegisteredImage
     {
         public int Slot { get; }
@@ -50,10 +43,6 @@ namespace MGXRM.Plugins.Tests.Framework
             Attributes = PluginReflection.SplitCsv(attributes);
         }
 
-        /// <summary>
-        /// The alias <see cref="PluginContextManager{T}"/> will look for, or null where the framework
-        /// cannot read an image of this type at all (see <see cref="ImageTypeEnum.Both"/>).
-        /// </summary>
         public string ExpectedName
         {
             get
@@ -71,17 +60,10 @@ namespace MGXRM.Plugins.Tests.Framework
         }
     }
 
-    /// <summary>
-    /// Reflection helpers over the plugin assembly: the registration attributes, the registered events
-    /// declared in plugin constructors, and the calls a plugin's execute method makes.
-    /// </summary>
     public static class PluginReflection
     {
         public static Assembly PluginAssembly => typeof(Plugin).Assembly;
 
-        /// <summary>
-        /// Every concrete class in the plugin assembly that derives from <see cref="Plugin"/>.
-        /// </summary>
         public static IEnumerable<Type> GetPluginTypes()
         {
             return GetPluginTypes(PluginAssembly);
@@ -102,9 +84,6 @@ namespace MGXRM.Plugins.Tests.Framework
                 .ToList();
         }
 
-        /// <summary>
-        /// Reads the protected RegisteredEvents collection populated by the plugin's constructor.
-        /// </summary>
         public static IList<RegisteredEvent> GetRegisteredEvents(Type pluginType)
         {
             var plugin = (Plugin)Activator.CreateInstance(pluginType);
@@ -133,11 +112,6 @@ namespace MGXRM.Plugins.Tests.Framework
             return SplitCsv(registration.FilteringAttributes);
         }
 
-        /// <summary>
-        /// The methods called by <paramref name="handler"/>, following any private helpers declared on
-        /// <paramref name="declaringPluginType"/> so a plugin that delegates through its own methods is
-        /// still matched.
-        /// </summary>
         public static IList<MethodBase> GetCalledMethods(MethodInfo handler, Type declaringPluginType)
         {
             var calls = new List<MethodBase>();

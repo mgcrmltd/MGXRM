@@ -5,11 +5,6 @@ using Microsoft.Xrm.Sdk.Client;
 
 namespace MGXRM.Common.EarlyBounds
 {
-    /// <summary>
-    /// Hand-written early bound type for the environment variable definition entity - the half of an
-    /// environment variable that ships with the solution and carries the default value. Only the attributes
-    /// this solution actually uses are declared.
-    /// </summary>
     [DataContract]
     [EntityLogicalName(EntityLogicalName)]
     public class EnvironmentVariableDefinition : Entity
@@ -49,9 +44,6 @@ namespace MGXRM.Common.EarlyBounds
             }
         }
 
-        /// <summary>
-        /// The unique name a variable is looked up by, including the publisher prefix.
-        /// </summary>
         [AttributeLogicalName(Fields.SchemaName)]
         public string SchemaName
         {
@@ -66,10 +58,6 @@ namespace MGXRM.Common.EarlyBounds
             set => SetAttributeValue(Fields.DisplayName, value);
         }
 
-        /// <summary>
-        /// Used when this environment has no value record of its own. Stored as text whatever the declared
-        /// <see cref="Type"/> is.
-        /// </summary>
         [AttributeLogicalName(Fields.DefaultValue)]
         public string DefaultValue
         {
@@ -92,10 +80,6 @@ namespace MGXRM.Common.EarlyBounds
         }
     }
 
-    /// <summary>
-    /// The declared type of an environment variable. Note that the value is stored as text regardless, so
-    /// this says how to read it rather than how it is held.
-    /// </summary>
     public enum EnvironmentVariableDefinition_Type
     {
         String = 100000000,
