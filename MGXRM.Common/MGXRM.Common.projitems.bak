@@ -19,16 +19,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\PluginContextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\WorkflowContextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\ControllerBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\CustomApiControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\PluginControllerBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\CustomApi\CustomApiRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\CustomApi\CustomApiResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\WorkflowControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Extensions\EntityExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ImageManagement\ImageAttributeVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ImageManagement\ImageManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IContextManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\ICustomApiOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IImageAttributeVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IImageManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IPluginEvents.cs" />
