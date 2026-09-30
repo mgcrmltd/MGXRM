@@ -6,27 +6,29 @@ using MGXRM.Common.Framework.Model;
 using MGXRM.Common.Framework.Repositories;
 using MGXRM.Common.Tests.TestCore;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using Xunit;
 
 namespace MGXRM.Common.Tests.Framework.Model
 {
     public class ContactModelTest
     {
-        /// <summary>
-        /// Lets the model wire up its own contact repository. Because that repository decorates whatever
-        /// the setup produced, the model's real queries run against a seeded CRM with no wiring here.
-        /// </summary>
         private static ContactModel ModelFor(ModelSetup<Contact> setup)
         {
             return new ContactModel(setup.Images, setup.Context, setup.Repository);
         }
 
-        /// <summary>
-        /// Passes in a contact repository for the test to arrange.
-        /// </summary>
-        private static ContactModel ModelFor(ModelSetup<Contact> setup, IContactRepository contacts)
+        private static ContactModel ModelFor(ModelSetup<Contact> setup,
+            IEnvironmentVariableRepository environmentVariables)
         {
-            return new ContactModel(setup.Images, setup.Context, setup.Repository, contacts);
+            return new ContactModel(setup.Images, setup.Context, setup.Repository,
+                new ContactRepository(setup.Repository), environmentVariables);
+        }
+
+        private static ContactModel ModelFor(ModelSetup<Contact> setup, IContactRepository contacts,
+            IEnvironmentVariableRepository environmentVariables)
+        {
+            return new ContactModel(setup.Images, setup.Context, setup.Repository, contacts, environmentVariables);
         }
 
         #region MakeSurnameUppercase
@@ -137,12 +139,9 @@ namespace MGXRM.Common.Tests.Framework.Model
 
         #endregion
 
-        #region EnforceEmailIsUnique - arranging the repository
 
-        /// <summary>
-        /// Faking the repository and passing it in. The test states what the query returns, so it says
-        /// nothing about how the query is built. Use this when the rule is the point.
-        /// </summary>
+        #region EnforceEmailIsUnique - arranged contact repository
+
         [Fact]
         public void EnforceEmailIsUnique_Throws_When_Another_Contact_Uses_The_Email()
         {
@@ -155,7 +154,7 @@ namespace MGXRM.Common.Tests.Framework.Model
                 .WithTarget(c => c.EmailAddress1 = "bob@example.com");
 
             var ex = Assert.Throws<InvalidPluginExecutionException>(
-                () => ModelFor(setup, contacts).EnforceEmailIsUnique());
+                () => ModelFor(setup, contacts, UniqueEmailEnforcement(true)).EnforceEmailIsUnique());
             Assert.Contains("bob@example.com", ex.Message);
         }
 
@@ -169,13 +168,9 @@ namespace MGXRM.Common.Tests.Framework.Model
                 .Update().PreOperation()
                 .WithTarget(c => c.EmailAddress1 = "bob@example.com");
 
-            ModelFor(setup, contacts).EnforceEmailIsUnique();
+            ModelFor(setup, contacts, UniqueEmailEnforcement(true)).EnforceEmailIsUnique();
         }
 
-        /// <summary>
-        /// The step can fire for any of its filtering attributes, so a model that queries on every call
-        /// would cost a query per update for no reason.
-        /// </summary>
         [Fact]
         public void EnforceEmailIsUnique_Does_Not_Query_When_The_Email_Is_Not_Being_Set()
         {
@@ -186,7 +181,7 @@ namespace MGXRM.Common.Tests.Framework.Model
                 .WithPreImage(c => c.EmailAddress1 = "bob@example.com")
                 .WithTarget(c => c.LastName = "jones");
 
-            ModelFor(setup, contacts).EnforceEmailIsUnique();
+            ModelFor(setup, contacts, UniqueEmailEnforcement(true)).EnforceEmailIsUnique();
 
             A.CallTo(() => contacts.GetByEmail(A<string>._)).MustNotHaveHappened();
         }
@@ -201,61 +196,105 @@ namespace MGXRM.Common.Tests.Framework.Model
                 .WithPreImage(c => c.EmailAddress1 = "bob@example.com")
                 .WithTarget(c => c.EmailAddress1 = null);
 
-            ModelFor(setup, contacts).EnforceEmailIsUnique();
+            ModelFor(setup, contacts, UniqueEmailEnforcement(true)).EnforceEmailIsUnique();
 
             A.CallTo(() => contacts.GetByEmail(A<string>._)).MustNotHaveHappened();
         }
 
         #endregion
 
-        #region EnforceEmailIsUnique - seeding the CRM instead
+        #region EnforceEmailIsUnique - faked environment variable, real contacts in the org service
 
-        /// <summary>
-        /// Seeding the data and letting ContactRepository's real query run against it. Use this when the
-        /// query itself is the point - this test would catch a wrong attribute name, which the arranged
-        /// version above cannot.
-        /// </summary>
         [Fact]
-        public void EnforceEmailIsUnique_Finds_A_Real_Duplicate_In_The_Seeded_Crm()
+        public void A_Contact_Created_Through_The_Org_Service_Is_Found_By_The_Real_Query()
         {
-            var existing = new Contact { Id = Guid.NewGuid(), EmailAddress1 = "bob@example.com" };
+            var setup = SetupForEmail("bob@example.com");
+            setup.Repository.Create(new Contact { EmailAddress1 = "bob@example.com" });
 
-            var setup = ModelSetup.For<Contact>()
-                .Update().PreOperation()
-                .WithTarget(c => c.EmailAddress1 = "bob@example.com")
-                .WithFakeCrm(existing);
-
-            Assert.Throws<InvalidPluginExecutionException>(() => ModelFor(setup).EnforceEmailIsUnique());
+            var ex = Assert.Throws<InvalidPluginExecutionException>(
+                () => ModelFor(setup, UniqueEmailEnforcement(true)).EnforceEmailIsUnique());
+            Assert.Contains("bob@example.com", ex.Message);
         }
 
         [Fact]
-        public void EnforceEmailIsUnique_Allows_An_Email_No_Seeded_Contact_Uses()
+        public void A_Contact_Created_With_A_Different_Email_Does_Not_Clash()
         {
-            var existing = new Contact { Id = Guid.NewGuid(), EmailAddress1 = "someone@example.com" };
+            var setup = SetupForEmail("bob@example.com");
+            setup.Repository.Create(new Contact { EmailAddress1 = "someone@example.com" });
 
-            var setup = ModelSetup.For<Contact>()
-                .Update().PreOperation()
-                .WithTarget(c => c.EmailAddress1 = "bob@example.com")
-                .WithFakeCrm(existing);
-
-            ModelFor(setup).EnforceEmailIsUnique();
+            ModelFor(setup, UniqueEmailEnforcement(true)).EnforceEmailIsUnique();
         }
 
-        /// <summary>
-        /// An update that re-sends the same email must not reject itself.
-        /// </summary>
         [Fact]
-        public void EnforceEmailIsUnique_Ignores_The_Contact_Being_Updated()
+        public void The_Check_Is_Skipped_When_The_Environment_Variable_Turns_It_Off()
+        {
+            var setup = SetupForEmail("bob@example.com");
+            setup.Repository.Create(new Contact { EmailAddress1 = "bob@example.com" });
+
+            ModelFor(setup, UniqueEmailEnforcement(false)).EnforceEmailIsUnique();
+        }
+
+        [Fact]
+        public void The_Check_Runs_When_The_Environment_Variable_Is_Unset()
+        {
+            var setup = SetupForEmail("bob@example.com");
+            setup.Repository.Create(new Contact { EmailAddress1 = "bob@example.com" });
+
+            Assert.Throws<InvalidPluginExecutionException>(
+                () => ModelFor(setup, UniqueEmailEnforcement(null)).EnforceEmailIsUnique());
+        }
+
+        [Fact]
+        public void The_Contact_Being_Updated_Is_Not_Its_Own_Duplicate()
         {
             var id = Guid.NewGuid();
-
             var setup = ModelSetup.For<Contact>()
                 .Update().PreOperation()
                 .WithId(id)
                 .WithTarget(c => c.EmailAddress1 = "bob@example.com")
-                .WithFakeCrm(new Contact { Id = id, EmailAddress1 = "bob@example.com" });
+                .WithFakeCrm();
 
-            ModelFor(setup).EnforceEmailIsUnique();
+            setup.Repository.Create(new Contact(id) { EmailAddress1 = "bob@example.com" });
+
+            ModelFor(setup, UniqueEmailEnforcement(true)).EnforceEmailIsUnique();
+        }
+
+        [Fact]
+        public void Contacts_Really_Are_In_The_Org_Service()
+        {
+            var setup = SetupForEmail("bob@example.com");
+            var id = setup.Repository.Create(new Contact { EmailAddress1 = "bob@example.com" });
+
+            var stored = setup.Service.Retrieve(Contact.EntityLogicalName, id, new ColumnSet(true));
+
+            Assert.Equal("bob@example.com", stored.ToEntity<Contact>().EmailAddress1);
+        }
+
+        [Fact]
+        public void The_Environment_Variable_Is_Only_Read_Once_Per_Check()
+        {
+            var variables = UniqueEmailEnforcement(true);
+            var setup = SetupForEmail("bob@example.com");
+
+            ModelFor(setup, variables).EnforceEmailIsUnique();
+
+            A.CallTo(() => variables.GetBoolean(ContactModel.EnforceUniqueEmailVariable))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        private static ModelSetup<Contact> SetupForEmail(string email)
+        {
+            return ModelSetup.For<Contact>()
+                .Update().PreOperation()
+                .WithTarget(c => c.EmailAddress1 = email)
+                .WithFakeCrm();
+        }
+
+        private static IEnvironmentVariableRepository UniqueEmailEnforcement(bool? enabled)
+        {
+            var variables = A.Fake<IEnvironmentVariableRepository>();
+            A.CallTo(() => variables.GetBoolean(ContactModel.EnforceUniqueEmailVariable)).Returns(enabled);
+            return variables;
         }
 
         #endregion

@@ -14,23 +14,24 @@ namespace MGXRM.Common.Framework.Model
     }
     public class ContactModel : ModelBase<Contact>, IContactModel
     {
+        public const string EnforceUniqueEmailVariable = "mgxrm_EnforceUniqueContactEmail";
+
         private readonly IContactRepository _contacts;
 
-        /// <summary>
-        /// Wires up its own contact repository. This is the constructor the controller uses, and the one a
-        /// test uses when it is happy for the real queries to run - against a seeded CRM, for instance.
-        /// </summary>
         public ContactModel(IImageManager<Contact> images, IContextManager<Contact> context, IRepository repository)
             : this(images, context, repository, new ContactRepository(repository))
         {
         }
 
-        /// <summary>
-        /// Takes the contact repository instead of building one, for a test that wants to arrange what the
-        /// queries return. Add a constructor like this for each dependency that turns out to need faking.
-        /// </summary>
         public ContactModel(IImageManager<Contact> images, IContextManager<Contact> context, IRepository repository,
-            IContactRepository contacts) : base(images, context, repository)
+            IContactRepository contacts)
+            : this(images, context, repository, contacts, new EnvironmentVariableRepository(repository))
+        {
+        }
+
+        public ContactModel(IImageManager<Contact> images, IContextManager<Contact> context, IRepository repository,
+            IContactRepository contacts, IEnvironmentVariableRepository environmentVariables)
+            : base(images, context, repository, environmentVariables)
         {
             _contacts = contacts;
         }
@@ -49,10 +50,6 @@ namespace MGXRM.Common.Framework.Model
             if(Images.IsBeingSetAsNull(Contact.Fields.LastName)) throw new InvalidPluginExecutionException();
         }
 
-        /// <summary>
-        /// Rejects an email address another contact is already using. The record being updated is excluded,
-        /// otherwise an update that does not change the email would reject itself.
-        /// </summary>
         public void EnforceEmailIsUnique()
         {
             if (!Images.IsBeingSetOrUpdated(Contact.Fields.EmailAddress1)) return;
@@ -60,7 +57,10 @@ namespace MGXRM.Common.Framework.Model
             var email = Images.GetLatestString(Contact.Fields.EmailAddress1);
             if (string.IsNullOrWhiteSpace(email)) return;
 
-            if (_contacts.GetByEmail(email).Any(c => c.Id != Context.PrimaryEntityId))
+            if (EnvironmentVariables.GetBoolean(EnforceUniqueEmailVariable) == false) return;
+
+            var otherContacts = _contacts.GetByEmail(email).Where(c => c.Id != Context.PrimaryEntityId);
+            if (otherContacts.Any())
                 throw new InvalidPluginExecutionException($"{email} is already used by another contact.");
         }
     }
