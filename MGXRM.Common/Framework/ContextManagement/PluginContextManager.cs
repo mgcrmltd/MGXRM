@@ -5,6 +5,12 @@ using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Common.Framework.ContextManagement
 {
+    public static class PluginContextManager
+    {
+        public const string PreImageAlias = "PreImage";
+        public const string PostImageAlias = "PostImage";
+    }
+
     public class PluginContextManager<T> : IContextManager<T> where T : Entity
     {
         #region Members and Constructors
@@ -66,13 +72,13 @@ namespace MGXRM.Common.Framework.ContextManagement
         public ParameterCollection OutputParams => Context.OutputParameters;
 
         public T PreImage => (Context.PreEntityImages != null
-                                   && Context.PreEntityImages.Contains("PreImage")) ? Context.PreEntityImages["PreImage"].ToEntity<T>() : null;
+                                   && Context.PreEntityImages.Contains(PluginContextManager.PreImageAlias)) ? Context.PreEntityImages[PluginContextManager.PreImageAlias].ToEntity<T>() : null;
 
         public T TargetImage => (Context.InputParameters != null
-                                   && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity).ToEntity<T>() : null;
+                                   && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity)?.ToEntity<T>() : null;
 
         public T PostImage => (Context.PostEntityImages != null
-                                      && Context.PostEntityImages.Contains("PostImage")) ? Context.PostEntityImages["PostImage"].ToEntity<T>() : null;
+                                      && Context.PostEntityImages.Contains(PluginContextManager.PostImageAlias)) ? Context.PostEntityImages[PluginContextManager.PostImageAlias].ToEntity<T>() : null;
 
         #endregion
     }
