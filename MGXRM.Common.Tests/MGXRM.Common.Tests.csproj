@@ -142,6 +142,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\FindDuplicateContactsControllerTest.cs" />
     <Compile Include="EarlyBounds\ContactTest.cs" />
     <Compile Include="Framework\ContextManagement\PluginContextManagerTest.cs" />
     <Compile Include="Framework\ContextManagement\WorkflowContextManagerTest.cs" />

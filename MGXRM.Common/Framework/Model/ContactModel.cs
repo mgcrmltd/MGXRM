@@ -1,5 +1,7 @@
-﻿using MGXRM.Common.EarlyBounds;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.Interfaces;
 using MGXRM.Common.Framework.Repositories;
 using Microsoft.Xrm.Sdk;
@@ -11,6 +13,7 @@ namespace MGXRM.Common.Framework.Model
         void MakeSurnameUppercase();
         void EnforceSurnameRequired();
         void EnforceEmailIsUnique();
+        List<Contact> FindDuplicatesByEmail(string email, Guid? excludeContactId);
     }
     public class ContactModel : ModelBase<Contact>, IContactModel
     {
@@ -59,9 +62,18 @@ namespace MGXRM.Common.Framework.Model
 
             if (EnvironmentVariables.GetBoolean(EnforceUniqueEmailVariable) == false) return;
 
-            var otherContacts = _contacts.GetByEmail(email).Where(c => c.Id != Context.PrimaryEntityId);
-            if (otherContacts.Any())
+            if (FindDuplicatesByEmail(email, Context.PrimaryEntityId).Any())
                 throw new InvalidPluginExecutionException($"{email} is already used by another contact.");
+        }
+
+        public List<Contact> FindDuplicatesByEmail(string email, Guid? excludeContactId)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return new List<Contact>();
+
+            return _contacts.GetByEmail(email)
+                .Where(c => !excludeContactId.HasValue || c.Id != excludeContactId.Value)
+                .ToList();
         }
     }
 }

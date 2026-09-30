@@ -78,6 +78,7 @@
     <Compile Include="Framework\PluginConventions.cs" />
     <Compile Include="Framework\PluginReflection.cs" />
     <Compile Include="Framework\PluginTestBase.cs" />
+    <Compile Include="PluginExecution\FindDuplicateContactsTests.cs" />
     <Compile Include="PluginExecution\PreContactUpdateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

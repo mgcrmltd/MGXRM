@@ -76,6 +76,7 @@
     <Compile Include="CrmPluginRegistrationAttribute.cs" />
     <Compile Include="CustomApi.cs" />
     <Compile Include="Plugin.cs" />
+    <Compile Include="PluginExecution\FindDuplicateContacts.cs" />
     <Compile Include="PluginExecution\PreContactUpdate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -298,5 +298,68 @@ namespace MGXRM.Common.Tests.Framework.Model
         }
 
         #endregion
+
+        #region FindDuplicatesByEmail - plain arguments, no api plumbing
+
+        [Fact]
+        public void FindDuplicatesByEmail_Returns_Contacts_Sharing_The_Email()
+        {
+            var existing = new Contact { Id = Guid.NewGuid(), EmailAddress1 = "bob@example.com" };
+            var setup = ModelSetup.For<Contact>().WithFakeCrm(existing);
+
+            var duplicates = ModelFor(setup).FindDuplicatesByEmail("bob@example.com", null);
+
+            Assert.Single(duplicates);
+            Assert.Equal(existing.Id, duplicates[0].Id);
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Excludes_The_Given_Contact()
+        {
+            var id = Guid.NewGuid();
+            var setup = ModelSetup.For<Contact>()
+                .WithFakeCrm(new Contact { Id = id, EmailAddress1 = "bob@example.com" });
+
+            Assert.Empty(ModelFor(setup).FindDuplicatesByEmail("bob@example.com", id));
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Returns_Nothing_For_A_Blank_Email()
+        {
+            var setup = ModelSetup.For<Contact>()
+                .WithFakeCrm(new Contact { Id = Guid.NewGuid(), EmailAddress1 = "bob@example.com" });
+
+            Assert.Empty(ModelFor(setup).FindDuplicatesByEmail("   ", null));
+        }
+
+        [Fact]
+        public void FindDuplicatesByEmail_Does_Not_Query_For_A_Blank_Email()
+        {
+            var contacts = A.Fake<IContactRepository>();
+            var setup = ModelSetup.For<Contact>();
+
+            ModelFor(setup, contacts, UniqueEmailEnforcement(true)).FindDuplicatesByEmail(null, null);
+
+            A.CallTo(() => contacts.GetByEmail(A<string>._)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void EnforceEmailIsUnique_Uses_The_Same_Domain_Query()
+        {
+            var contacts = A.Fake<IContactRepository>();
+            A.CallTo(() => contacts.GetByEmail("bob@example.com"))
+                .Returns(new List<Contact> { new Contact { Id = Guid.NewGuid() } });
+
+            var setup = ModelSetup.For<Contact>()
+                .Update().PreOperation()
+                .WithTarget(c => c.EmailAddress1 = "bob@example.com");
+
+            var model = ModelFor(setup, contacts, UniqueEmailEnforcement(true));
+
+            Assert.Throws<InvalidPluginExecutionException>(() => model.EnforceEmailIsUnique());
+            Assert.Single(model.FindDuplicatesByEmail("bob@example.com", null));
+        }
+
+        #endregion
     }
 }
