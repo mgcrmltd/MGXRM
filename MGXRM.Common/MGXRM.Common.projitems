@@ -9,7 +9,6 @@
     <Import_RootNamespace>MGXRM.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\FindDuplicateContactsController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\Contact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableDefinition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableValue.cs" />

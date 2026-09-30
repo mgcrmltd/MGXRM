@@ -1,4 +1,4 @@
-using MGXRM.Common.Controllers;
+using MGXRM.Plugins.Controllers;
 using MGXRM.Plugins.PluginExecution;
 using MGXRM.Plugins.Tests.Framework;
 using Xunit;

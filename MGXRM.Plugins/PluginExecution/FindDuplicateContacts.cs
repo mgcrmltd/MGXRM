@@ -1,5 +1,5 @@
 using System;
-using MGXRM.Common.Controllers;
+using MGXRM.Plugins.Controllers;
 
 namespace MGXRM.Plugins.PluginExecution
 {

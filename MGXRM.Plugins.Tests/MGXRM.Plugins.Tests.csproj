@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\FindDuplicateContactsControllerTest.cs" />
     <Compile Include="Conventions\PluginConventionTests.cs" />
     <Compile Include="Framework\IlReader.cs" />
     <Compile Include="Framework\PluginAssertions.cs" />

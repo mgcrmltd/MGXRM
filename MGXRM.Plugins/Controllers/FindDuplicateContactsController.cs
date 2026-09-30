@@ -4,7 +4,7 @@ using MGXRM.Common.Framework.Controller;
 using MGXRM.Common.Framework.Interfaces;
 using MGXRM.Common.Framework.Model;
 
-namespace MGXRM.Common.Controllers
+namespace MGXRM.Plugins.Controllers
 {
     public class FindDuplicateContactsController : CustomApiControllerBase<Contact>
     {
