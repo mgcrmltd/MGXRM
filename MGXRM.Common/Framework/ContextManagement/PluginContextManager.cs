@@ -80,7 +80,7 @@ namespace MGXRM.Common.Framework.ContextManagement
                                    && Context.PreEntityImages.Contains(PluginContextManager.PreImageAlias)) ? Context.PreEntityImages[PluginContextManager.PreImageAlias].ToEntity<T>() : null;
 
         public T TargetImage => (Context.InputParameters != null
-                                   && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity).ToEntity<T>() : null;
+                                   && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity)?.ToEntity<T>() : null;
 
         public T PostImage => (Context.PostEntityImages != null
                                       && Context.PostEntityImages.Contains(PluginContextManager.PostImageAlias)) ? Context.PostEntityImages[PluginContextManager.PostImageAlias].ToEntity<T>() : null;
