@@ -14,6 +14,11 @@ namespace MGXRM.Plugins.Controllers
             _model = new ContactModel(ImageManager, ContextManager, Repository);
         }
 
+        public ContactController(IContactModel fakeModel) : base()
+        {
+            _model = fakeModel;
+        }
+
         public override void PreCreate()
         {
             _model.MakeSurnameUppercase();
