@@ -19,5 +19,9 @@ namespace MGXRM.Common.Framework.Controller
             ImageManager = new ImageManager<T>(ContextManager.PreImage, ContextManager.TargetImage, ContextManager.PostImage);
             Repository = new Repository(ContextManager.Service);
         }
+
+        protected ControllerBase()
+        {
+        }
     }
 }
