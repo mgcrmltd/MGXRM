@@ -156,9 +156,12 @@
     <Compile Include="Framework\Repositories\RepositoryTest.cs" />
     <Compile Include="Modules\CustomerSupport\Controllers\ContactControllerTest.cs" />
     <Compile Include="Modules\CustomerSupport\Models\ContactModelTest.cs" />
+    <Compile Include="Modules\CustomerSupport\Repositories\ContactRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCore\ModelSetup.cs" />
     <Compile Include="TestCore\ModelSetupTest.cs" />
+    <Compile Include="TestCore\RepositoryTestBase.cs" />
+    <Compile Include="TestCore\RepositoryTestBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
