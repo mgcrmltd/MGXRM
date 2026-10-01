@@ -9,6 +9,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MGXRM.Common", "MGXRM.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Common.Tests", "MGXRM.Common.Tests\MGXRM.Common.Tests.csproj", "{CC37EC7F-2F82-4195-BECB-6467DC631BF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGXRM.Plugins.Tests", "MGXRM.Plugins.Tests\MGXRM.Plugins.Tests.csproj", "{8B8255DD-0C61-4245-8320-D639C9351716}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MGXRM.Common\MGXRM.Common.projitems*{0f281fc4-8f06-4c28-afcd-e491ca4f2ef5}*SharedItemsImports = 13
@@ -28,6 +30,10 @@ Global
 		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC37EC7F-2F82-4195-BECB-6467DC631BF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B8255DD-0C61-4245-8320-D639C9351716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B8255DD-0C61-4245-8320-D639C9351716}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B8255DD-0C61-4245-8320-D639C9351716}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B8255DD-0C61-4245-8320-D639C9351716}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

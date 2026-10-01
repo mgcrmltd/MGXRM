@@ -49,7 +49,7 @@ namespace MGXRM.Common.Framework.ContextManagement
         public T PostImage => (Context.PostEntityImages != null
                                     && Context.PostEntityImages.Contains("PostBusinessEntity")) ? Context.PostEntityImages["PostBusinessEntity"].ToEntity<T>() : null;
         public T TargetImage => (Context.InputParameters != null
-                                      && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity).ToEntity<T>() : null;
+                                      && Context.InputParameters.Contains("Target")) ? (Context.InputParameters["Target"] as Entity)?.ToEntity<T>() : null;
         #endregion
     }
 }

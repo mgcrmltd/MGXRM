@@ -132,6 +132,14 @@ namespace MGXRM.Common.Tests.Framework.ContextManagement
             Assert.Null(_manager.PostImage);
         }
 
+        [Fact]
+        public void TargetImage_Returns_Null_When_Target_Is_An_EntityReference()
+        {
+            FakeContext(false);
+            _fakeExecutionContext.InputParameters.Add("Target", new EntityReference("mgxrm_customentity", Guid.NewGuid()));
+            Assert.Null(_manager.TargetImage);
+        }
+
     }
 }
 

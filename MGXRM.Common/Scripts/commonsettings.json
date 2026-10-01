@@ -1,5 +1,0 @@
-{
-  "ToolsDirectory": "c:\\devtools",
-  "D365ConnectionString": "Url=http://localhost:5555/; authtype=AD",
-  "Url": "http://localhost:5555/"
-}

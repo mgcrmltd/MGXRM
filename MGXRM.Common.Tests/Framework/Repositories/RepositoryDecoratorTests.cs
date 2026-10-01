@@ -30,7 +30,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             var result = _decorator.Create(entity);
 
             Assert.Equal(expectedId, result);
-            A.CallTo(() => _fakeRepository.Create(entity)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.Create(entity)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             _decorator.Delete(entity);
 
-            A.CallTo(() => _fakeRepository.Delete(entity)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.Delete(entity)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             _decorator.Delete(entityRef);
 
-            A.CallTo(() => _fakeRepository.Delete(entityRef)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.Delete(entityRef)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             _decorator.Update(entity);
 
-            A.CallTo(() => _fakeRepository.Update(entity)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.Update(entity)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             var result = _decorator.Retrieve("account", id, columnSet);
 
             Assert.Equal(entity, result);
-            A.CallTo(() => _fakeRepository.Retrieve("account", id, columnSet)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.Retrieve("account", id, columnSet)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             var result = _decorator.RetrieveMultiple(query);
 
             Assert.Equal(entities, result);
-            A.CallTo(() => _fakeRepository.RetrieveMultiple(query)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.RetrieveMultiple(query)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             Assert.Equal(entities, result);
             A.CallTo(() => _fakeRepository.RetrieveByAttribute("account", "name", "Test"))
-                .MustHaveHappened(Repeated.Exactly.Once);
+                .MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             _decorator.ChangeStatus(entity, 1, 2);
 
-            A.CallTo(() => _fakeRepository.ChangeStatus(entity, 1, 2)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.ChangeStatus(entity, 1, 2)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
 
             _decorator.AssignRecord(entityRef, assignee);
 
-            A.CallTo(() => _fakeRepository.AssignRecord(entityRef, assignee)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.AssignRecord(entityRef, assignee)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace MGXRM.Common.Tests.Framework.Repositories
             var result = _decorator.FetchAll(fetchXml);
 
             Assert.Equal(entities, result);
-            A.CallTo(() => _fakeRepository.FetchAll(fetchXml)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _fakeRepository.FetchAll(fetchXml)).MustHaveHappenedOnceExactly();
         }
     }
 }

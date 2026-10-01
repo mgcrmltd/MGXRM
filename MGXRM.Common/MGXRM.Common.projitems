@@ -9,6 +9,8 @@
     <Import_RootNamespace>MGXRM.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\EnvironmentVariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Mode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EarlyBounds\SdkMessageProcessingStep_Stage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\AzureQueueLogger\IQueueLogger.cs" />
@@ -27,21 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IPluginEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\EnvironmentVariableRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\Repository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\RepositoryDecorator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Scripts\1_Setup.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\BuildEventILMergeCheck.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\CommonSettingsFunctions.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\CreateCommonVariables.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\InstallXrmTools.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\SettingsWizard.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\TestProjects.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\VisualStudioProjectFileFunctions.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Scripts\commonsettings.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Scripts\localcommonsettings.json" />
   </ItemGroup>
 </Project>
