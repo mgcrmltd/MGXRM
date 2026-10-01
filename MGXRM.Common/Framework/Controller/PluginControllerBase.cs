@@ -14,6 +14,10 @@ namespace MGXRM.Common.Framework.Controller
         protected PluginControllerBase(IServiceProvider provider)
             : base(new PluginContextManager<T>(provider)) { }
 
+        protected PluginControllerBase() : base()
+        {
+        }
+
         public virtual void PreCreate()
         {
         }
