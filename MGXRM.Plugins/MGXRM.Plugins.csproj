@@ -72,8 +72,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="CrmPluginRegistrationAttribute.cs" />
     <Compile Include="Plugin.cs" />
+    <Compile Include="PluginExecution\PreContactUpdate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
