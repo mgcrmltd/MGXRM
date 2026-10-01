@@ -22,7 +22,7 @@ Choose the mode: synchronous whenever the user should see a failure, or the reco
 
 ## Naming
 
-- Class: `<Stage><Table><Message>`, e.g. `PreContactUpdate`, `PostAccountCreate`, `PostInvoiceSetState`.
+- Class: `<Stage><Table><Message>`, e.g. `PreContactUpdate`, `PostAccountCreate`, `PostInvoiceSetState`. A class with several steps is named for what they share; see "Several steps in one class".
 - Step name: the same, in words, e.g. `"Pre Contact Update"`.
 - Execution order: use `10` unless other steps on the same message and table need ordering. Search the existing registrations for the table first.
 - Id: a brand-new GUID for every step. Generate it with `[guid]::NewGuid()` or `uuidgen`; never copy one. The convention tests reject duplicates, because spkl would overwrite one step with another.
@@ -130,8 +130,148 @@ Assertions available on `PluginUnderTest`:
 | Images | `HasPreImage(params attrs)`, `HasPostImage(params attrs)`, `HasNoImages` |
 | Consistency and hand-off | `IsConsistent`, `InvokesControllerOperation<TController>(op)`, `DoesNotInvokeControllerOperation<TController>(op)` |
 
-For a plugin with several steps, select one with `Step("Step name")` or `ForStep(...)` before asserting.
+For a plugin with several steps, select one with `Step("Step name")` or `ForStep(...)` before asserting. See the next section.
 
 `InvokesControllerOperation` reads the plugin's IL, so it requires the plugin to construct the controller and call the operation directly. Add the `DoesNotInvokeControllerOperation` line for the most likely wrong operation. For example, PreCreate when testing a PreUpdate step guards against copy-paste errors.
 
 The assembly-wide convention tests already cover the new plugin. No changes are needed there, but they must pass.
+
+## Several steps in one class
+
+One plugin class can carry several steps. Each step has three parts that must agree:
+- its own `[CrmPluginRegistration]` attribute. The attribute allows multiples, and spkl deploys each one as a separate step
+- its own `RegisteredEvents` entry
+- its own handler method
+
+### When to do it
+
+Use one step per class by default. Use one class for several steps when:
+- the user asks for it, or
+- the repository already groups steps this way (check the existing plugin classes), or
+- the steps are the same table's events handed to the same controller, e.g. PreOperation Create and PreOperation Update running the same rules.
+
+Never group steps for different tables. Each table has its own controller, and the plugin class should stay a single, obvious entry point into it.
+
+### The one hard constraint
+
+`Plugin.Execute` picks the handler by **stage + message + table**, and the delegation test does the same. Two steps in one class must therefore differ in message or stage. Two Update PreOperation steps on the same table, e.g. with different filtering attributes, cannot share a class. Put them in separate classes.
+
+### Naming
+
+- **Class:** name it for what the steps share, e.g. `PreContactCreateUpdate` for PreOperation Create and Update, or `ContactPostOperation` for several post-operation messages. Match any existing multi-step class.
+- **Steps:** each step keeps its own step name, e.g. `"Pre Contact Create"` and `"Pre Contact Update"`, and its own new GUID.
+- **Handler methods:** name each one for its step, e.g. `ExecutePreContactCreate` and `ExecutePreContactUpdate`.
+
+### The class
+
+```csharp
+[CrmPluginRegistration(MessageNameEnum.Create, Contact.EntityLogicalName, StageEnum.PreOperation,
+    ExecutionModeEnum.Synchronous, "", "Pre Contact Create", 10, IsolationModeEnum.Sandbox,
+    Id = "<new guid>")]
+[CrmPluginRegistration(MessageNameEnum.Update, Contact.EntityLogicalName, StageEnum.PreOperation,
+    ExecutionModeEnum.Synchronous, Contact.Fields.LastName + "," + Contact.Fields.EmailAddress1,
+    "Pre Contact Update", 10, IsolationModeEnum.Sandbox, Id = "<another new guid>")]
+public class PreContactCreateUpdate : Plugin
+{
+    public PreContactCreateUpdate()
+        : base(typeof(PreContactCreateUpdate))
+    {
+        base.RegisteredEvents.Add(new Tuple<int, string, string, Action<LocalPluginContext>>(20, "Create",
+            Contact.EntityLogicalName, ExecutePreContactCreate));
+        base.RegisteredEvents.Add(new Tuple<int, string, string, Action<LocalPluginContext>>(20, "Update",
+            Contact.EntityLogicalName, ExecutePreContactUpdate));
+    }
+
+    protected void ExecutePreContactCreate(LocalPluginContext localContext)
+    {
+        if (localContext == null)
+        {
+            throw new ArgumentNullException(nameof(localContext));
+        }
+
+        new ContactController(localContext.ServiceProvider).PreCreate();
+    }
+
+    protected void ExecutePreContactUpdate(LocalPluginContext localContext)
+    {
+        if (localContext == null)
+        {
+            throw new ArgumentNullException(nameof(localContext));
+        }
+
+        if (localContext.PluginExecutionContext.Depth > 1)
+            return;
+
+        new ContactController(localContext.ServiceProvider).PreUpdate();
+    }
+}
+```
+
+**Each handler calls exactly one controller operation.** Don't share a handler between steps, and don't branch on the message inside one. The controller's events already separate Create from Update, and a shared handler would make each step's delegation test meaningless.
+
+**Choose the images per step.** A Create step can have no pre image, because the record doesn't exist yet, and a PreOperation step can have no post image. Each attribute declares only what its own step needs.
+
+**Filtering attributes per step.** Create steps don't filter, so pass `""`. Update steps list their own attributes, as above.
+
+### Tests for a multi-step class
+
+Write one test pair per step: a registration test and a delegation test. Select each step by name, and finish the registration chain with `IsConsistent()`, so each attribute is checked against its own `RegisteredEvents` entry. Also pin the total count once, so an extra or missing attribute fails a test.
+
+```csharp
+public class PreContactCreateUpdateTests : PluginTestBase<PreContactCreateUpdate>
+{
+    [Fact]
+    public void Declares_A_Create_And_An_Update_Step()
+    {
+        PluginUnderTest.HasRegistrationCount(2);
+    }
+
+    [Fact]
+    public void Create_Step_Is_Registered_As_Expected()
+    {
+        Step("Pre Contact Create")
+            .IsRegisteredFor(MessageNameEnum.Create, Contact.EntityLogicalName)
+            .IsPreOperation()
+            .IsSynchronous()
+            .IsSandbox()
+            .HasOrder(10)
+            .HasNoFilteringAttributes()
+            .HasNoImages()
+            .IsConsistent();
+    }
+
+    [Fact]
+    public void Create_Step_Delegates_To_PreCreate()
+    {
+        Step("Pre Contact Create")
+            .InvokesControllerOperation<ContactController>(nameof(ContactController.PreCreate))
+            .DoesNotInvokeControllerOperation<ContactController>(nameof(ContactController.PreUpdate));
+    }
+
+    [Fact]
+    public void Update_Step_Is_Registered_As_Expected()
+    {
+        Step("Pre Contact Update")
+            .IsRegisteredFor(MessageNameEnum.Update, Contact.EntityLogicalName)
+            .IsPreOperation()
+            .IsSynchronous()
+            .IsSandbox()
+            .HasOrder(10)
+            .HasFilteringAttributes(Contact.Fields.LastName, Contact.Fields.EmailAddress1)
+            .HasNoImages()
+            .IsConsistent();
+    }
+
+    [Fact]
+    public void Update_Step_Delegates_To_PreUpdate()
+    {
+        Step("Pre Contact Update")
+            .InvokesControllerOperation<ContactController>(nameof(ContactController.PreUpdate))
+            .DoesNotInvokeControllerOperation<ContactController>(nameof(ContactController.PreCreate));
+    }
+}
+```
+
+Without `Step(...)`, any step-level assertion on a multi-step class fails with a message asking you to select a step. `ForMessage(MessageNameEnum.Update)` works too, when each message appears only once.
+
+**Mutation check.** Swap the controller operations between the two handlers. Both delegation tests should go red.
