@@ -1,9 +1,9 @@
 ﻿using FakeItEasy;
-using MGXRM.Common.Framework.Controller;
-using MGXRM.Common.Framework.Model;
+using MGXRM.Common.Modules.CustomerSupport.Controllers;
+using MGXRM.Common.Modules.CustomerSupport.Models;
 using Xunit;
 
-namespace MGXRM.Common.Tests.Framework.Controller
+namespace MGXRM.Common.Tests.Modules.CustomerSupport.Controllers
 {
     public class ContactControllerTest
     {

@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using MGXRM.Common.EarlyBounds;
 using MGXRM.Common.Framework.Interfaces;
+using MGXRM.Common.Framework.Repositories;
 
-namespace MGXRM.Common.Framework.Repositories
+namespace MGXRM.Common.Modules.CustomerSupport.Repositories
 {
     public interface IContactRepository : IRepository
     {

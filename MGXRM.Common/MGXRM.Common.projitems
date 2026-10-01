@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\AzureQueueLogger\QueueLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\PluginContextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\WorkflowContextManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\ContactController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\ControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\PluginControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\WorkflowControllerBase.cs" />
@@ -30,11 +29,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IImageManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IPluginEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Interfaces\IRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ContactModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Model\ModelBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\ContactRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\EnvironmentVariableRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\Repository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Repositories\RepositoryDecorator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\CustomerSupport\Controllers\ContactController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\CustomerSupport\Models\ContactModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\CustomerSupport\Repositories\ContactRepository.cs" />
   </ItemGroup>
 </Project>

@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using FakeItEasy;
 using MGXRM.Common.EarlyBounds;
-using MGXRM.Common.Framework.Model;
 using MGXRM.Common.Framework.Repositories;
+using MGXRM.Common.Modules.CustomerSupport.Models;
+using MGXRM.Common.Modules.CustomerSupport.Repositories;
 using MGXRM.Common.Tests.TestCore;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Xunit;
 
-namespace MGXRM.Common.Tests.Framework.Model
+namespace MGXRM.Common.Tests.Modules.CustomerSupport.Models
 {
     public class ContactModelTest
     {

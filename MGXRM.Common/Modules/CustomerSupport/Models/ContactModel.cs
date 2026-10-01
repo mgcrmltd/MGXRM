@@ -1,10 +1,12 @@
 ﻿using MGXRM.Common.EarlyBounds;
 using System.Linq;
 using MGXRM.Common.Framework.Interfaces;
+using MGXRM.Common.Framework.Model;
 using MGXRM.Common.Framework.Repositories;
+using MGXRM.Common.Modules.CustomerSupport.Repositories;
 using Microsoft.Xrm.Sdk;
 
-namespace MGXRM.Common.Framework.Model
+namespace MGXRM.Common.Modules.CustomerSupport.Models
 {
     public interface IContactModel
     {
