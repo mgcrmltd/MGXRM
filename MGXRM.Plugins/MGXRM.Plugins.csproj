@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="CrmPluginRegistrationAttribute.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PluginExecution\PreContactUpdate.cs" />
@@ -85,7 +84,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers" />
     <Folder Include="PluginExecution" />
   </ItemGroup>
   <Import Project="..\MGXRM.Common\MGXRM.Common.projitems" Label="Shared" />

@@ -1,9 +1,8 @@
 ﻿using System;
 using MGXRM.Common.EarlyBounds;
-using MGXRM.Common.Framework.Controller;
 using MGXRM.Common.Framework.Model;
 
-namespace MGXRM.Plugins.Controllers
+namespace MGXRM.Common.Framework.Controller
 {
     public class ContactController : PluginControllerBase<Contact>
     {

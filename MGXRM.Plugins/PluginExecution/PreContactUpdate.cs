@@ -1,6 +1,6 @@
 ﻿using System;
 using MGXRM.Common.EarlyBounds;
-using MGXRM.Plugins.Controllers;
+using MGXRM.Common.Framework.Controller;
 using Microsoft.Xrm.Sdk;
 
 namespace MGXRM.Plugins.PluginExecution

@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Framework\AzureQueueLogger\QueueLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\PluginContextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\ContextManagement\WorkflowContextManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\ContactController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\ControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\PluginControllerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Framework\Controller\WorkflowControllerBase.cs" />

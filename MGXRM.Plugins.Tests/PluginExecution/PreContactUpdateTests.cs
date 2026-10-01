@@ -1,5 +1,5 @@
 using MGXRM.Common.EarlyBounds;
-using MGXRM.Plugins.Controllers;
+using MGXRM.Common.Framework.Controller;
 using MGXRM.Plugins.PluginExecution;
 using MGXRM.Plugins.Tests.Framework;
 using Xunit;

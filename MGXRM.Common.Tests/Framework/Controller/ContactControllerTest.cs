@@ -1,16 +1,16 @@
 ﻿using FakeItEasy;
+using MGXRM.Common.Framework.Controller;
 using MGXRM.Common.Framework.Model;
-using MGXRM.Plugins.Controllers;
 using Xunit;
 
-namespace MGXRM.Plugins.Tests.Controllers
+namespace MGXRM.Common.Tests.Framework.Controller
 {
-    public class ContractControllerTests
+    public class ContactControllerTest
     {
         private IContactModel _fakeModel;
         private ContactController _controller;
 
-        public ContractControllerTests()
+        public ContactControllerTest()
         {
             _fakeModel = A.Fake<IContactModel>();
             _controller = new ContactController(_fakeModel);
