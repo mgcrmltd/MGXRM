@@ -156,6 +156,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCore\ModelSetup.cs" />
     <Compile Include="TestCore\ModelSetupTest.cs" />
+    <Compile Include="TestCore\RepositoryTestBase.cs" />
+    <Compile Include="TestCore\RepositoryTestBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
